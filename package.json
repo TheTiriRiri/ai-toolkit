@@ -26,7 +26,7 @@
   "scripts": {
     "postinstall": "node install.js --postinstall",
     "test": "node --test test/*.test.js",
-    "validate": "bash scripts/validate.sh"
+    "validate": "bash scripts/validate.sh && npm test"
   },
   "engines": {
     "node": ">=22"
