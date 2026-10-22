@@ -141,6 +141,34 @@ test("broken markers in CLAUDE.md stop the uninstall before any file is deleted"
   assert.deepEqual(snapshot(project), before);
 });
 
+test("a skill directory that is a symlink out of the project stops the uninstall before anything is deleted", (t) => {
+  const { base, project, toolkit } = setup(t);
+  const kit = toolkit();
+  kit.install({ root: project });
+  const outside = path.join(base, "outside");
+  fs.renameSync(path.join(project, ".claude/skills/alpha"), outside);
+  fs.symlinkSync(outside, path.join(project, ".claude/skills/alpha"));
+  const before = snapshot(outside);
+
+  assert.throws(() => kit.uninstall({ root: project }), /symlink/);
+  assert.deepEqual(snapshot(outside), before);
+  assert.equal(exists(project, ".claude/skills/beta/SKILL.md"), true);
+});
+
+test("a .claude directory symlinked inside the project uninstalls cleanly and keeps the link", (t) => {
+  const { project, toolkit } = setup(t, { "CLAUDE.md": "# My notes\n", "package.json": "{}\n" });
+  fs.mkdirSync(path.join(project, "config/claude"), { recursive: true });
+  fs.symlinkSync("config/claude", path.join(project, ".claude"));
+  const kit = toolkit();
+  kit.install({ root: project });
+
+  kit.uninstall({ root: project });
+
+  assert.equal(read(project, "CLAUDE.md"), "# My notes\n");
+  assert.deepEqual(fs.readdirSync(path.join(project, "config/claude")), []);
+  assert.equal(fs.lstatSync(path.join(project, ".claude")).isSymbolicLink(), true);
+});
+
 test("an unreadable manifest stops the uninstall before any file is deleted", (t) => {
   const { project, toolkit } = setup(t);
   const kit = toolkit();

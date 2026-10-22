@@ -248,6 +248,51 @@ for (const [label, skills] of ESCAPING_ENTRIES) {
   });
 }
 
+test("a skill directory that is a symlink out of the project stops even a forced install, and nothing outside changes", (t) => {
+  const { project, toolkit } = setup(t);
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+  const outside = path.join(path.dirname(project), "outside");
+  writeFiles(outside, { "SKILL.md": "not yours\n", "references/notes.md": "not yours either\n" });
+  fs.rmSync(path.join(project, ".claude/skills/alpha"), { recursive: true });
+  fs.symlinkSync(outside, path.join(project, ".claude/skills/alpha"));
+  const before = snapshot(outside);
+
+  assert.throws(() => toolkit({ skills: { alpha: ALPHA_V2 } }).install({ root: project, force: true }), /symlink/);
+  assert.deepEqual(snapshot(outside), before);
+});
+
+test("a managed file that is a symlink out of the project stops a forced install before it writes through the link", (t) => {
+  const { project, toolkit } = setup(t);
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+  const victim = path.join(path.dirname(project), "victim.txt");
+  fs.writeFileSync(victim, "not yours\n");
+  fs.rmSync(path.join(project, ".claude/skills/alpha/SKILL.md"));
+  fs.symlinkSync(victim, path.join(project, ".claude/skills/alpha/SKILL.md"));
+
+  assert.throws(() => toolkit({ skills: { alpha: ALPHA_V2 } }).install({ root: project, force: true }), /symlink/);
+  assert.equal(fs.readFileSync(victim, "utf8"), "not yours\n");
+});
+
+test("a CLAUDE.md symlink to a missing file stops the install before anything is created", (t) => {
+  const { project, toolkit } = setup(t, { "package.json": "{}\n" });
+  const missing = path.join(path.dirname(project), "CLAUDE-elsewhere.md");
+  fs.symlinkSync(missing, path.join(project, "CLAUDE.md"));
+
+  assert.throws(() => toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project }), /symlink/);
+  assert.equal(fs.existsSync(missing), false);
+  assert.equal(exists(project, ".claude"), false);
+});
+
+test("a CLAUDE.md symlinked to another file inside the project gets the block in that file", (t) => {
+  const { project, toolkit } = setup(t, { "AGENTS.md": "# Agents\n", "package.json": "{}\n" });
+  fs.symlinkSync("AGENTS.md", path.join(project, "CLAUDE.md"));
+
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+
+  assert.equal(read(project, "AGENTS.md"), `# Agents\n\n${BLOCK}\n`);
+  assert.equal(fs.lstatSync(path.join(project, "CLAUDE.md")).isSymbolicLink(), true);
+});
+
 test("broken markers in CLAUDE.md stop the install before any file changes", (t) => {
   const { project, toolkit } = setup(t, { "CLAUDE.md": `# My notes\n${BEGIN}\n` });
   const before = snapshot(project);
