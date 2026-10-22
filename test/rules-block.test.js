@@ -75,3 +75,15 @@ test("notes written after the block survive its removal with a single blank line
 test("a block at the top of the file is removed together with the blank line under it", () => {
   assert.equal(removeRulesBlock(`${BLOCK}\n\n# Notes\n`), "# Notes\n");
 });
+
+const CRLF_BLOCK = BLOCK.replaceAll("\n", "\r\n");
+
+test("a file with CRLF line endings gets the block with CRLF line endings too", () => {
+  assert.equal(applyRulesBlock("# My notes\r\n", RULES), `# My notes\r\n\r\n${CRLF_BLOCK}\r\n`);
+  assert.equal(applyRulesBlock(`# My notes\r\n\r\n${BEGIN}\r\nold\r\n${END}\r\n`, RULES), `# My notes\r\n\r\n${CRLF_BLOCK}\r\n`);
+});
+
+test("removing a CRLF block from a CRLF file leaves the same blank lines as with LF", () => {
+  assert.equal(removeRulesBlock(`# Before\r\n\r\n${CRLF_BLOCK}\r\n\r\n# After\r\n`), "# Before\r\n\r\n# After\r\n");
+  assert.equal(removeRulesBlock(`# My notes\r\n\r\n${CRLF_BLOCK}\r\n`), "# My notes\r\n");
+});

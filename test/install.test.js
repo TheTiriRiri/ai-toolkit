@@ -212,6 +212,21 @@ test("hand edits inside the managed block are replaced, with a warning", (t) => 
   assert.match(summary.warnings.join("\n"), /CLAUDE\.md/);
 });
 
+test("a CLAUDE.md converted to CRLF after the install is left alone by a forced install, without a warning", (t) => {
+  const { project, toolkit } = setup(t);
+  const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+  kit.install({ root: project });
+  const crlf = read(project, "CLAUDE.md").replaceAll("\n", "\r\n");
+  writeFiles(project, { "CLAUDE.md": crlf });
+  const manifest = read(project, MANIFEST);
+
+  const summary = kit.install({ root: project, force: true });
+
+  assert.equal(read(project, "CLAUDE.md"), crlf);
+  assert.equal(read(project, MANIFEST), manifest);
+  assert.deepEqual(summary.warnings, []);
+});
+
 const BROKEN_MANIFESTS = [
   ["is not JSON", "{ not json"],
   ["belongs to another package", JSON.stringify({ package: "@someone/else", manifestVersion: 1, files: { skills: {} } })],

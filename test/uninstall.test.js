@@ -180,6 +180,18 @@ test("an unreadable manifest stops the uninstall before any file is deleted", (t
   assert.deepEqual(snapshot(project), before);
 });
 
+test("a CLAUDE.md converted to CRLF after the install is restored exactly by uninstall, without a warning", (t) => {
+  const { project, toolkit } = setup(t);
+  const kit = toolkit();
+  kit.install({ root: project });
+  writeFiles(project, { "CLAUDE.md": read(project, "CLAUDE.md").replaceAll("\n", "\r\n") });
+
+  const summary = kit.uninstall({ root: project });
+
+  assert.equal(read(project, "CLAUDE.md"), "# My notes\r\n");
+  assert.deepEqual(summary.warnings, []);
+});
+
 test("a hand-edited managed block is still removed, with a warning", (t) => {
   const { project, toolkit } = setup(t);
   const kit = toolkit();
