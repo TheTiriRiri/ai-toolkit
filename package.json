@@ -1,0 +1,34 @@
+{
+  "name": "@thetiriri/10x-ai-toolkit",
+  "version": "0.1.0",
+  "description": "Claude Code skills and working rules distributed through GitHub Packages",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheTiriRiri/10x-ai-toolkit.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "skills/",
+    "rules/",
+    "lib/",
+    "install.js",
+    "uninstall.js",
+    "README.md"
+  ],
+  "bin": {
+    "10x-ai-toolkit": "install.js",
+    "10x-ai-toolkit-uninstall": "uninstall.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js --postinstall",
+    "test": "node --test test/*.test.js",
+    "validate": "bash scripts/validate.sh"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
