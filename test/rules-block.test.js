@@ -76,6 +76,16 @@ test("a block at the top of the file is removed together with the blank line und
   assert.equal(removeRulesBlock(`${BLOCK}\n\n# Notes\n`), "# Notes\n");
 });
 
+test("markers mentioned inside a sentence are not the block, so the sentence survives install and removal", () => {
+  const existing = `The toolkit block sits between \`${BEGIN}\` and \`${END}\`.\n`;
+  assert.equal(applyRulesBlock(existing, RULES), `${existing}\n${BLOCK}\n`);
+  assert.equal(removeRulesBlock(applyRulesBlock(existing, RULES)), existing);
+});
+
+test("marker lines with spaces or tabs around the marker still mark the block", () => {
+  assert.equal(applyRulesBlock(`# My notes\n\n  ${BEGIN}  \nold\n\t${END}\n`, RULES), `# My notes\n\n${BLOCK}\n`);
+});
+
 const CRLF_BLOCK = BLOCK.replaceAll("\n", "\r\n");
 
 test("a file with CRLF line endings gets the block with CRLF line endings too", () => {
