@@ -1,0 +1,121 @@
+/* brutal — neo-brutalist: 3px borders, hard offset shadows, flat saturated states, oversized display type.
+   Two-mode: warm white in light, off-black in dark. Print drops shadows and thins borders; fills are kept.
+   Best under roughly three pages — the contrast is deliberate and gets tiring at length. */
+
+:root{
+  --bg:#f5f2ea;--card:#ffffff;--text:#000000;--muted:#3d3d3d;--border:#000000;
+  --accent:#ffde59;--code-bg:#eeeae0;
+  --warn-bg:#ffb84d;--warn:#000000;
+  --bad-bg:#d92020;--bad:#ffffff;
+  --ok-bg:#7bf1a8;--ok:#000000;
+  --part-bg:#c9b8ff;--part:#000000;
+  --info-bg:#8ed6ff;--info:#000000;
+  --shadow:#000000;
+  --sans:"Space Grotesk",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Archivo Black","Space Grotesk",Impact,"Arial Black",system-ui,sans-serif;
+  --mono:"Space Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#141414;--card:#1e1e1e;--text:#f4f4f4;--muted:#b5b5b5;--border:#f4f4f4;
+    --accent:#ffe066;--code-bg:#242424;
+    --warn-bg:#8a5a00;--warn:#ffe9c2;
+    --bad-bg:#a01f1f;--bad:#ffe3e3;
+    --ok-bg:#1c6b40;--ok:#d6ffe7;
+    --part-bg:#4a3a9c;--part:#e6dfff;
+    --info-bg:#1d5b85;--info:#dcf1ff;
+    --shadow:#f4f4f4;
+  }
+}
+
+body{font-family:var(--sans)}
+code,.p,pre{font-family:var(--mono)}
+main{max-width:1080px}
+main>p,.callout p{max-width:80ch}
+
+h1,h2{font-family:var(--display)}
+h1{font-size:2.8rem;font-weight:900;text-transform:uppercase;letter-spacing:-.02em;line-height:1.05}
+h2{font-size:1.6rem;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;border-bottom:4px solid var(--border);padding-bottom:.25em;margin:2.6em 0 .8em}
+h3{font-size:1.15rem;font-weight:800;letter-spacing:-.005em}
+h4{font-weight:800;font-size:1rem}
+.kicker{font-family:var(--mono);font-weight:700;letter-spacing:.12em;color:var(--text)}
+.lead{font-size:1.05rem;font-weight:500;color:var(--text)}
+.hero{border:3px solid var(--border);border-radius:0;background:var(--accent);color:#000;box-shadow:6px 6px 0 var(--shadow);padding:24px}
+.hero .kicker,.hero .lead,.hero h1{color:#000}
+.meta div,.meta b{color:var(--text)}
+a{color:var(--text);text-decoration:underline;text-decoration-thickness:2px}
+a.p{color:var(--text)}
+
+.meta{gap:12px;margin-top:22px}
+.meta div{border:3px solid var(--border);border-radius:0;box-shadow:4px 4px 0 var(--shadow);padding:10px 14px}
+.meta span{font-family:var(--mono);font-weight:700;font-size:.68rem;letter-spacing:.08em;color:var(--muted)}
+.meta b{font-weight:800}
+.meta .b{white-space:normal;overflow-wrap:anywhere}
+
+.toc{border:3px solid var(--border);border-radius:0;box-shadow:5px 5px 0 var(--shadow);padding:16px 22px}
+.toc>b{font-family:var(--display);text-transform:uppercase;letter-spacing:.04em}
+.toc a{text-decoration:none;color:var(--text);font-weight:600}
+.toc a:hover{text-decoration:underline}
+
+.cards{gap:18px}
+.card{border:3px solid var(--border);border-radius:0;box-shadow:5px 5px 0 var(--shadow);padding:16px 18px;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--shadow)}
+.card .num{display:inline-block;background:var(--border);color:var(--bg);font-family:var(--display);font-size:1.1rem;line-height:1;padding:7px 11px;margin-bottom:9px}
+.item{border:3px solid var(--border);border-radius:0;box-shadow:4px 4px 0 var(--shadow);grid-template-columns:58px 1fr}
+.item .id{font-family:var(--mono);font-weight:700;font-size:.9rem;color:var(--text)}
+
+.b{border-radius:0;border:2px solid var(--border);font-family:var(--mono);font-weight:700;text-transform:uppercase;font-size:.68rem;letter-spacing:.05em;padding:1px 7px}
+
+.scroll{border:3px solid var(--border);border-radius:0;box-shadow:5px 5px 0 var(--shadow)}
+th{background:var(--border);color:var(--bg);font-family:var(--mono);font-weight:700;font-size:.72rem;letter-spacing:.06em;border-bottom:3px solid var(--border)}
+td{border-bottom:2px solid var(--border)}
+td:first-child{font-weight:800;white-space:normal}
+
+pre{border:3px solid var(--border);border-radius:0;box-shadow:4px 4px 0 var(--shadow)}
+code,a.p{border:2px solid var(--border);border-radius:0}
+blockquote{border-left:6px solid var(--border);background:var(--code-bg);color:var(--text);padding:10px 16px}
+
+.callout{border:3px solid var(--border);border-radius:0;box-shadow:5px 5px 0 var(--shadow);background:var(--card);color:var(--text)}
+.callout::before{font-family:var(--display);text-transform:uppercase;font-size:.8rem;letter-spacing:.04em;display:block;margin-bottom:6px}
+.callout.warn{background:var(--warn-bg);border-color:var(--border);color:var(--warn)}
+.callout.warn::before{content:"Warning"}
+.callout.ok{background:var(--ok-bg);border-color:var(--border);color:var(--ok)}
+.callout.ok::before{content:"OK"}
+.callout.stop{background:var(--bad-bg);border-color:var(--border);color:var(--bad);font-size:1.05rem;font-weight:800}
+.callout.stop::before{content:"Stop"}
+
+footer{border-top:4px solid var(--border);font-family:var(--mono);font-weight:600;font-size:.8rem}
+
+/* the base marks edited blocks with an inset shadow at the same specificity as .card —
+   without these the panel shadows above would silently erase the edit indicator */
+[data-modified="true"]{box-shadow:inset 4px 0 0 #f59e0b}
+.card[data-modified="true"],.callout[data-modified="true"]{box-shadow:5px 5px 0 var(--shadow),inset 5px 0 0 #f59e0b}
+.item[data-modified="true"],.meta div[data-modified="true"]{box-shadow:4px 4px 0 var(--shadow),inset 5px 0 0 #f59e0b}
+pre[data-modified="true"]{box-shadow:4px 4px 0 var(--shadow),inset 5px 0 0 #f59e0b}
+
+.edit-toggle{border-radius:0;border:3px solid var(--border);font-family:var(--display);text-transform:uppercase;font-size:.8rem;letter-spacing:.04em;background:var(--accent);color:#000;box-shadow:5px 5px 0 var(--shadow)}
+.edit-toggle.editing{background:var(--bad-bg);color:var(--bad)}
+.edit-toolbar{border-bottom:3px solid var(--border);box-shadow:0 4px 0 var(--shadow)}
+.edit-toolbar button,.edit-count{border:2px solid var(--border);border-radius:0;font-family:var(--mono);font-weight:700;font-size:.78rem}
+body.edit-mode [data-edit-id]:hover{outline-color:var(--accent)}
+
+@media (prefers-reduced-motion:reduce){
+  .card{transition:none}
+  .card:hover{transform:none;box-shadow:5px 5px 0 var(--shadow)}
+}
+
+@media print{
+  :root{
+    --bg:#fff;--card:#fff;--text:#000;--muted:#3d3d3d;--border:#000;
+    --accent:#ffde59;--code-bg:#eeeae0;
+    --warn-bg:#ffb84d;--warn:#000;--bad-bg:#ff4b4b;--bad:#fff;
+    --ok-bg:#7bf1a8;--ok:#000;--part-bg:#c9b8ff;--part:#000;
+    --info-bg:#8ed6ff;--info:#000;--shadow:transparent;
+  }
+  body{background:#fff;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2,h3{break-after:avoid}
+  .hero,.card,.item,.scroll,.toc,.meta div,.callout,pre,.edit-toolbar{box-shadow:none;border-width:2px;border-color:#000}
+  .card:hover{transform:none;box-shadow:none}
+  th{background:#000;color:#fff}
+}

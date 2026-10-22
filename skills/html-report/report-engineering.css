@@ -1,0 +1,112 @@
+/* engineering theme — appended after report.css, wins on cascade order.
+   Spec-sheet look: numbered sections, tabular figures, hairline rules, one accent, no shadows.
+   Follows prefers-color-scheme; print falls back to the light palette. */
+
+:root{
+  --bg:#fbfbfa;--card:#ffffff;--text:#16181d;--muted:#646b76;--border:#d9dde3;
+  --accent:#0f5c5c;--code-bg:#f1f2f0;
+  --warn-bg:#fdf4e3;--warn:#7a4f0b;
+  --bad-bg:#fbeaea;--bad:#8f2323;
+  --ok-bg:#e8f2ea;--ok:#1c5733;
+  --part-bg:#ecebf6;--part:#3a3a86;
+  --info-bg:#e9eff5;--info:#1f4b70;
+  --sans:"IBM Plex Sans",Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --rule:1px solid var(--border);
+}
+
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1013;--card:#171a1f;--text:#e3e6ea;--muted:#939ba7;--border:#262b33;
+    --accent:#4fd1c5;--code-bg:#1c2026;
+    --warn-bg:#2c2208;--warn:#e0b061;
+    --bad-bg:#2e1618;--bad:#e88c8c;
+    --ok-bg:#12291c;--ok:#71c295;
+    --part-bg:#1d1d33;--part:#a9a9e8;
+    --info-bg:#132330;--info:#7fb0d6;
+  }
+}
+
+body{font-family:var(--sans);font-feature-settings:"cv05","ss01";background:var(--bg)}
+code,.p,pre{font-family:var(--mono)}
+main{max-width:1020px;counter-reset:sec}
+main>p,.lead,.callout p{max-width:78ch}
+code,pre,.p,th,td,.meta b,.item .id,.card .num,.toc ol,.b{font-variant-numeric:tabular-nums}
+
+/* typography — structural weight instead of colour */
+h1{font-weight:600;letter-spacing:-.02em;font-size:2.1rem}
+h2{font-weight:600;letter-spacing:-.01em;font-size:1.3rem;border-bottom:var(--rule);padding-bottom:.35em;margin:2.6em 0 .9em;counter-increment:sec}
+h2::before{content:counter(sec) ".\2003";color:var(--muted);font-family:var(--mono);font-weight:400;font-size:.9em}
+h3{font-weight:600;font-size:1.02rem;letter-spacing:-.005em}
+h4{font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.78rem}
+.kicker{font-family:var(--mono);font-weight:500;letter-spacing:.12em;color:var(--accent)}
+.lead{font-size:1.02rem;line-height:1.6}
+a{text-underline-offset:2px;text-decoration-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+
+/* panels — flat, hairline, square-ish */
+.card,.item,.meta div,.callout,.toc,.scroll{border-radius:4px;box-shadow:none}
+.meta{gap:0;border:var(--rule);border-radius:4px;background:var(--card)}
+.meta div{border:0;border-right:var(--rule);border-radius:0;padding:11px 16px;min-width:0}
+.meta div:last-child{border-right:0}
+.meta .b{white-space:normal;overflow-wrap:anywhere}
+.meta span{font-family:var(--mono);font-size:.68rem;letter-spacing:.09em;margin-bottom:3px}
+.meta b{font-weight:600;font-size:.95rem}
+
+.toc{padding:14px 18px}
+.toc>b{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.toc ol{padding-left:1.6em}
+.toc li::marker{font-family:var(--mono);color:var(--muted)}
+.toc a{text-decoration:none;color:var(--text)}
+.toc a:hover{color:var(--accent);text-decoration:underline}
+
+/* finding cards — zero-padded index, hairline top rule */
+.cards{counter-reset:cardnum;gap:14px}
+.card{counter-increment:cardnum;padding:14px 18px 16px;border-top:2px solid var(--accent)}
+.card .num{font-family:var(--mono);font-weight:600;font-size:0;color:var(--muted);margin-bottom:8px}
+.card .num::before{content:counter(cardnum,decimal-leading-zero);font-size:.95rem;letter-spacing:.06em}
+.card h4,.item h4{font-size:1rem;font-weight:600;color:var(--text);text-transform:none;letter-spacing:-.005em;margin:0 0 .4em}
+
+.item{border-left:2px solid var(--accent);padding:11px 16px;grid-template-columns:56px 1fr}
+.item .id{font-family:var(--mono);font-size:.85rem;letter-spacing:.04em;color:var(--accent)}
+
+/* tables — spec-sheet grid */
+table{font-size:.9rem}
+th{font-family:var(--mono);font-weight:500;font-size:.7rem;letter-spacing:.09em;background:var(--code-bg);border-bottom:1px solid var(--border)}
+td{border-bottom:1px solid color-mix(in srgb,var(--border) 60%,transparent)}
+tbody tr:hover td{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+td:first-child{font-weight:600;font-family:var(--mono);font-size:.85rem}
+
+/* inline signals */
+.b{border-radius:3px;text-transform:uppercase;font-family:var(--mono);font-size:.66rem;letter-spacing:.07em;padding:2px 7px;border:1px solid color-mix(in srgb,currentColor 30%,transparent)}
+code{border:1px solid color-mix(in srgb,var(--border) 70%,transparent);border-radius:3px}
+pre{border:var(--rule);border-radius:4px;border-left:2px solid var(--border)}
+pre code{border:0}
+a.p{border:1px solid color-mix(in srgb,var(--border) 70%,transparent);border-radius:3px}
+
+blockquote{border-left:2px solid var(--border);background:none;padding-left:16px}
+.callout{border:var(--rule);border-left-width:3px;padding:12px 16px}
+.callout.warn{border-left-color:var(--warn)}
+.callout.stop{border-left-color:var(--bad);font-weight:600;font-size:1rem}
+.callout.ok{border-left-color:var(--ok)}
+.callout.warn,.callout.stop,.callout.ok{border-top-color:var(--border);border-right-color:var(--border);border-bottom-color:var(--border)}
+
+footer{font-family:var(--mono);font-size:.75rem;letter-spacing:.02em}
+
+.edit-toggle{border-radius:4px;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;box-shadow:none;border:1px solid var(--accent);color:var(--bg)}
+.edit-toggle.editing{background:var(--bad);border-color:var(--bad);color:var(--bg)}
+body.edit-mode [data-edit-id]:hover{outline-color:var(--accent)}
+.edit-toolbar{border-bottom-width:1px}
+.edit-toolbar button,.edit-count{border-radius:3px;font-family:var(--mono);font-size:.78rem}
+
+@media print{
+  :root{
+    --bg:#fff;--card:#fff;--text:#111;--muted:#555;--border:#c8ccd2;
+    --accent:#0f5c5c;--code-bg:#f2f3f4;
+    --warn-bg:#fdf4e3;--warn:#7a4f0b;--bad-bg:#fbeaea;--bad:#8f2323;
+    --ok-bg:#e8f2ea;--ok:#1c5733;--part-bg:#ecebf6;--part:#3a3a86;
+    --info-bg:#e9eff5;--info:#1f4b70;
+  }
+  body{background:#fff;color:#111}
+  h2,h3{break-after:avoid}
+  tbody tr:hover td{background:none}
+}

@@ -1,0 +1,104 @@
+/* blueprint — monochrome engineering sheet: no hue at all, faint drafting grid, tabular figures.
+   Two-mode: follows prefers-color-scheme. Print drops the grid and forces the light palette.
+   Distinct from `engineering`: that one keeps a teal accent and numbered sections; this one has neither. */
+
+:root{
+  --bg:#fafafa;--card:#ffffff;--text:#111111;--muted:#666666;--border:#e0e2e6;
+  --accent:#111111;--code-bg:#f3f4f6;
+  --warn-bg:#f6f1e2;--warn:#6b5200;
+  --bad-bg:#f6e9e9;--bad:#8a1f1f;
+  --ok-bg:#e9f0eb;--ok:#1d5638;
+  --part-bg:#ebebf2;--part:#3a3a80;
+  --info-bg:#e9eef4;--info:#1e4a70;
+  --grid:rgba(17,17,17,.06);
+  --sans:"Geist Sans",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono","JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0a0a0a;--card:#111111;--text:#ededed;--muted:#8f8f8f;--border:#272727;
+    --accent:#ededed;--code-bg:#171717;
+    --warn-bg:#2a2410;--warn:#d8bb6a;
+    --bad-bg:#2c1818;--bad:#e08b8b;
+    --ok-bg:#152a1d;--ok:#7cc79a;
+    --part-bg:#1e1e33;--part:#a8a8e0;
+    --info-bg:#14273a;--info:#82b2d8;
+    --grid:rgba(255,255,255,.05);
+  }
+}
+
+body{font-family:var(--sans)}
+code,.p,pre{font-family:var(--mono)}
+main{max-width:1040px}
+main>p,.lead,.callout p{max-width:80ch}
+code,pre,th,td,.meta b,.item .id,.card .num,.toc ol,.b,footer{font-variant-numeric:tabular-nums}
+
+h1{font-weight:600;letter-spacing:-.03em;font-size:2.2rem}
+h2{font-weight:500;font-size:1.3rem;letter-spacing:-.01em;border-bottom:0;border-top:1px solid var(--border);padding:.8em 0 0;margin:2.8em 0 .8em}
+h3{font-weight:600;font-size:1.05rem;letter-spacing:-.005em}
+h4{font-weight:600;font-size:.98rem}
+.kicker{font-family:var(--mono);letter-spacing:.1em;color:var(--muted)}
+.lead{font-size:1.02rem;color:var(--muted)}
+.hero{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;background-position:-1px -1px;border:1px solid var(--border);border-radius:6px;padding:24px}
+
+.meta{gap:0;border:1px solid var(--border);border-radius:6px;background:var(--card);margin-top:22px}
+.meta div{border:0;border-right:1px solid var(--border);border-radius:0;padding:11px 16px;min-width:0}
+.meta div:last-child{border-right:0}
+.meta span{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em}
+.meta .b{white-space:normal;overflow-wrap:anywhere}
+
+.toc{border-radius:6px;padding:14px 20px}
+.toc>b{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.toc ol{columns:1;padding-left:0;list-style:none;counter-reset:tocn}
+.toc li{counter-increment:tocn;display:flex;align-items:baseline;gap:6px;margin:4px 0}
+.toc li::before{content:counter(tocn,decimal-leading-zero);font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.toc li::after{content:"";flex:1;order:1;border-bottom:1px dotted var(--border);transform:translateY(-3px)}
+.toc a{text-decoration:none;color:var(--text)}
+.toc a:hover{color:var(--muted)}
+
+.card{border-radius:6px;box-shadow:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;background-position:-1px -1px}
+.card .num{font-family:var(--mono);font-weight:500;font-size:.95rem;letter-spacing:.06em;color:var(--muted)}
+.item{border-radius:6px;box-shadow:none;grid-template-columns:56px 1fr}
+.item .id{font-family:var(--mono);font-weight:500;font-size:.85rem;letter-spacing:.04em;color:var(--muted)}
+
+.b{border-radius:3px;font-family:var(--mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;padding:2px 7px;border:1px solid color-mix(in srgb,currentColor 30%,transparent)}
+
+.scroll{border-radius:6px}
+table{font-size:.9rem}
+th{font-family:var(--mono);font-weight:500;font-size:.68rem;letter-spacing:.09em;background:var(--code-bg)}
+td:not(:first-child){text-align:right}
+th:not(:first-child){text-align:right}
+td:first-child{font-weight:600;font-family:var(--mono);font-size:.85rem;white-space:normal}
+td ul{text-align:left}
+
+pre{border:1px solid var(--border);border-radius:6px}
+code,a.p{border:1px solid var(--border);border-radius:3px}
+blockquote{border-left:2px solid var(--border);background:none;padding-left:16px}
+
+.callout{border:1px solid var(--border);border-left-width:3px;border-radius:6px;background:var(--card);color:var(--text)}
+.callout.warn{border-left-color:var(--warn);border-top-color:var(--border);border-right-color:var(--border);border-bottom-color:var(--border);background:var(--card);color:var(--text)}
+.callout.ok{border-left-color:var(--ok);border-top-color:var(--border);border-right-color:var(--border);border-bottom-color:var(--border);background:var(--card);color:var(--text)}
+.callout.stop{border-left-color:var(--bad);border-top-color:var(--border);border-right-color:var(--border);border-bottom-color:var(--border);background:var(--card);color:var(--text);font-weight:600;font-size:1rem}
+
+footer{font-family:var(--mono);font-size:.76rem}
+
+.edit-toggle{border-radius:6px;font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;background:var(--accent);color:var(--bg);box-shadow:none;border:1px solid var(--accent)}
+.edit-toggle.editing{background:var(--bad);color:#fff;border-color:var(--bad)}
+.edit-toolbar{border-bottom-width:1px;box-shadow:none}
+.edit-toolbar button,.edit-count{font-family:var(--mono);font-size:.78rem;border-radius:4px}
+body.edit-mode [data-edit-id]:hover{outline-color:var(--muted)}
+
+@media print{
+  :root{
+    --bg:#fff;--card:#fff;--text:#111;--muted:#555;--border:#c6c9cf;
+    --accent:#111;--code-bg:#f2f3f4;
+    --warn-bg:#f6f1e2;--warn:#6b5200;--bad-bg:#f6e9e9;--bad:#8a1f1f;
+    --ok-bg:#e9f0eb;--ok:#1d5638;--part-bg:#ebebf2;--part:#3a3a80;
+    --info-bg:#e9eef4;--info:#1e4a70;--grid:transparent;
+  }
+  body{background:#fff;color:#111}
+  .hero,.card{background-image:none}
+  h2,h3{break-after:avoid}
+  .card,.item,.scroll,.toc,.meta div,.callout,.hero{border-color:var(--border)}
+}

@@ -1,0 +1,109 @@
+/* riviera — 1930s Mediterranean travel poster: sand canvas, navy ink, terracotta accent, postcard cards.
+   Two-mode: sand in light, dusk navy in dark. Print uses the light palette and drops the stamp rotation.
+   Decorative but restrained: the holiday lives in the hero and the chrome, not in the body text. */
+
+:root{
+  --bg:#f6efe4;--card:#fffaf2;--text:#1a2a4a;--muted:#5c6a80;--border:#c9bfa8;
+  --accent:#a8402a;--code-bg:#efe6d6;
+  --warn-bg:#f3dfae;--warn:#7a4f0b;
+  --bad-bg:#f4d6cf;--bad:#8f2323;
+  --ok-bg:#d6e9e0;--ok:#1f5e4a;
+  --part-bg:#e4dff0;--part:#4a3f7a;
+  --info-bg:#d9e5ee;--info:#1f4b70;
+  --ink:#1a2a4a;
+  --sans:"Source Sans 3","Gill Sans",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Josefin Sans",Futura,"Trebuchet MS","Gill Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14213d;--card:#1b2a4a;--text:#f1e7d5;--muted:#a9b0c2;--border:#33405e;
+    --accent:#e8a07a;--code-bg:#1f2f52;
+    --warn-bg:#3a2f14;--warn:#e5c07b;
+    --bad-bg:#3a201e;--bad:#e89a8c;
+    --ok-bg:#17322a;--ok:#83c7ac;
+    --part-bg:#262247;--part:#b3a8dd;
+    --info-bg:#16293c;--info:#8fb8d6;
+    --ink:#f1e7d5;
+  }
+}
+
+body{font-family:var(--sans)}
+code,.p,pre{font-family:var(--mono)}
+main{max-width:960px}
+main>p,.callout p{max-width:78ch}
+
+h1,h2,h3{font-family:var(--display)}
+h1{font-size:2.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;line-height:1.15}
+h2{font-size:1.4rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;text-align:center;border-bottom:0;padding-bottom:0;margin:2.8em 0 1.1em}
+h2::after{content:"";display:block;width:48px;height:3px;background:var(--accent);margin:.5em auto 0}
+h3{font-size:1.15rem;font-weight:600;letter-spacing:.03em}
+h4{font-weight:700;letter-spacing:.02em}
+.kicker{font-family:var(--display);letter-spacing:.3em;color:var(--accent);font-size:.72rem}
+.kicker::before{content:"— "}
+.kicker::after{content:" —"}
+.lead{font-size:1.05rem;font-style:italic}
+.hero{text-align:center;border:2px solid var(--border);border-radius:2px;padding:26px 22px;background:var(--card)}
+a{color:#2a7f8f}
+
+.meta{gap:0;border-top:2px dashed var(--border);border-bottom:2px dashed var(--border);margin-top:22px;background:none}
+.meta div{background:none;border:0;border-radius:0;padding:12px 16px;min-width:0}
+.meta span{font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-size:.66rem;color:var(--accent)}
+.meta b{font-weight:600}
+.meta .b{white-space:normal;overflow-wrap:anywhere}
+
+.toc{border:2px solid var(--border);border-radius:2px;padding:16px 22px;background:var(--card)}
+.toc>b{font-family:var(--display);text-transform:uppercase;letter-spacing:.18em;font-size:.72rem;color:var(--accent)}
+.toc a{text-decoration:none;color:var(--text)}
+.toc a:hover{color:var(--accent);text-decoration:underline}
+
+.card{border:2px solid var(--border);border-radius:2px;outline:2px solid var(--card);outline-offset:-6px;padding:18px 20px}
+.card .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--card);font-family:var(--display);font-size:.95rem;font-weight:700;line-height:1;margin-bottom:8px}
+.item{border:0;border-left:3px solid var(--accent);border-radius:0;background:var(--card);grid-template-columns:52px 1fr}
+.item .id{font-family:var(--display);font-weight:700;letter-spacing:.05em;color:var(--accent)}
+
+.b{border-radius:999px;font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-size:.66rem;padding:2px 9px;border:1px dashed color-mix(in srgb,currentColor 45%,transparent)}
+.b.ok{transform:rotate(-2deg)}
+
+.scroll{border:2px solid var(--border);border-radius:2px}
+th{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;background:var(--code-bg);color:var(--accent)}
+td:first-child{white-space:normal}
+
+pre{border:1px solid var(--border);border-radius:2px}
+code,a.p{border-radius:2px}
+blockquote{border-left:3px solid var(--accent);background:var(--card);font-style:italic}
+
+.callout{border:2px solid var(--border);border-radius:2px;background:var(--card);color:var(--text)}
+.callout.warn{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.callout.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.callout.stop{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);font-size:1.02rem;font-weight:700}
+
+footer{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:.72rem;border-top-width:2px}
+
+.edit-toggle{border-radius:2px;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;font-weight:700;background:var(--accent);color:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.2);border:2px solid var(--border)}
+.edit-toggle.editing{background:var(--bad);color:var(--card)}
+.edit-toolbar{border-bottom-width:2px}
+.edit-toolbar button,.edit-count{font-family:var(--display);letter-spacing:.06em;border-radius:2px}
+body.edit-mode [data-edit-id]:hover{outline-color:var(--accent)}
+
+@media (prefers-reduced-motion:reduce){.b.ok{transform:none}}
+
+@media print{
+  :root{
+    --bg:#fff;--card:#fdf9f1;--text:#1a2a4a;--muted:#55617a;--border:#b6ab92;
+    --accent:#b2492f;--code-bg:#f1e9da;
+    --warn-bg:#f3dfae;--warn:#7a4f0b;--bad-bg:#f4d6cf;--bad:#8f2323;
+    --ok-bg:#d6e9e0;--ok:#1f5e4a;--part-bg:#e4dff0;--part:#4a3f7a;
+    --info-bg:#d9e5ee;--info:#1f4b70;--ink:#1a2a4a;
+  }
+  body{background:#fff;color:var(--text)}
+  h2,h3{break-after:avoid}
+  .b.ok{transform:none}
+  .hero,.card,.item,.scroll,.toc,.meta div,.callout{border-color:var(--border)}
+  .card{outline-color:var(--card)}
+  .item{border-left-color:var(--accent)}
+  .callout.warn{border-color:var(--warn)}
+  .callout.ok{border-color:var(--ok)}
+  .callout.stop{border-color:var(--bad)}
+}

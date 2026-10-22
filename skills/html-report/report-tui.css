@@ -1,0 +1,109 @@
+/* tui — modern terminal UI on the Gruvbox palette: box borders, a status bar, no glow and no scanlines.
+   Two-mode: Gruvbox light in light, Gruvbox dark in dark. Print forces the light palette.
+   Monospace is the frame (chrome, tables, ids); prose stays sans so long reports remain readable. */
+
+:root{
+  --bg:#fbf1c7;--card:#f9f5d7;--text:#3c3836;--muted:#665c54;--border:#d5c4a1;
+  --accent:#8a5a0f;--code-bg:#f2e5bc;
+  --warn-bg:#f6dfc6;--warn:#af3a03;
+  --bad-bg:#f5d3cf;--bad:#9d0006;
+  --ok-bg:#e9ebc8;--ok:#6f6a0d;
+  --part-bg:#efd9e4;--part:#8f3f71;
+  --info-bg:#d6e6ea;--info:#076678;
+  --sans:Inter,"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono","JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#282828;--card:#32302f;--text:#ebdbb2;--muted:#a89984;--border:#504945;
+    --accent:#fabd2f;--code-bg:#1d2021;
+    --warn-bg:#3c2a1a;--warn:#fe8019;
+    --bad-bg:#2e1512;--bad:#fb4934;
+    --ok-bg:#2f331b;--ok:#b8bb26;
+    --part-bg:#3a2a33;--part:#d3869b;
+    --info-bg:#26333a;--info:#83a598;
+  }
+}
+
+body{font-family:var(--sans)}
+code,.p,pre{font-family:var(--mono)}
+main{max-width:1060px}
+main>p,.callout p{max-width:82ch}
+
+h1{font-size:2rem;font-weight:700;letter-spacing:-.01em}
+h2{font-family:var(--mono);font-size:1.15rem;font-weight:500;border-bottom:0;padding-bottom:0;margin:2.6em 0 .8em;color:var(--accent)}
+h2::before{content:"── "}
+h2::after{content:" ──"}
+h3{font-size:1.08rem;font-weight:600}
+h4{font-family:var(--mono);font-size:.92rem;font-weight:500;letter-spacing:.02em}
+.kicker{font-family:var(--mono);letter-spacing:.1em;color:var(--accent)}
+.lead{font-size:1.02rem}
+
+.meta{display:flex;flex-wrap:wrap;gap:0;border:0;border-radius:0;background:var(--accent);margin-top:20px;font-family:var(--mono)}
+.meta div{background:none;border:0;border-radius:0;padding:7px 14px;display:flex;align-items:baseline;gap:8px;min-width:0;color:var(--bg)}
+.meta div+div{border-left:1px solid color-mix(in srgb,var(--bg) 35%,transparent)}
+.meta span{display:inline;font-size:.66rem;letter-spacing:.09em;color:color-mix(in srgb,var(--bg) 75%,transparent)}
+.meta b{font-size:.82rem;font-weight:600;color:var(--bg)}
+.meta .b{white-space:normal;overflow-wrap:anywhere;border-radius:0;font-size:.66rem}
+
+.toc{border:1px solid var(--border);border-radius:0;padding:12px 18px;background:var(--card)}
+.toc>b{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.toc ol{columns:1;list-style:none;padding-left:0;margin-top:6px}
+.toc li{margin:3px 0}
+.toc li::before{content:"▸ ";font-family:var(--mono);color:var(--accent)}
+/* .toc li::before{content:"drwxr-xr-x  ";font-family:var(--mono);color:var(--muted);font-size:.8rem}  <- listing gag, off by default */
+.toc a{text-decoration:none;color:var(--text)}
+.toc a:hover{color:var(--accent);text-decoration:underline}
+
+.card{border:3px double var(--border);border-radius:0;padding:14px 16px}
+.card .num{font-family:var(--mono);font-size:.92rem;font-weight:500;letter-spacing:.06em}
+.card .num::before{content:"[ "}
+.card .num::after{content:" ]"}
+.item{border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0;grid-template-columns:56px 1fr}
+.item .id{font-family:var(--mono);font-size:.86rem;font-weight:500}
+
+.b{border-radius:0;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;padding:1px 6px;border:1px solid color-mix(in srgb,currentColor 35%,transparent)}
+
+.scroll{border:1px solid var(--border);border-radius:0}
+table{font-size:.9rem}
+th{font-family:var(--mono);background:var(--accent);color:var(--bg);font-size:.7rem;letter-spacing:.08em;border-bottom:1px solid var(--border)}
+td:first-child{font-family:var(--mono);font-size:.86rem;white-space:normal}
+
+pre{border:1px solid var(--border);border-radius:0;background:var(--code-bg)}
+code,a.p{border-radius:0;border:1px solid color-mix(in srgb,var(--border) 60%,transparent)}
+blockquote{border-left:3px solid var(--border);background:none;padding-left:16px}
+
+.callout{border:1px solid var(--border);border-left-width:3px;border-radius:0;background:var(--card);color:var(--text)}
+.callout::before{font-family:var(--mono);font-weight:600;font-size:.72rem;letter-spacing:.09em;display:block;margin-bottom:5px}
+.callout.warn{background:var(--card);border-color:var(--border);border-left-color:var(--warn);color:var(--text)}
+.callout.warn::before{content:"[!] WARNING";color:var(--warn)}
+.callout.ok{background:var(--card);border-color:var(--border);border-left-color:var(--ok);color:var(--text)}
+.callout.ok::before{content:"[+] OK";color:var(--ok)}
+.callout.stop{background:var(--card);border-color:var(--border);border-left-color:var(--bad);color:var(--text);font-size:1rem;font-weight:600}
+.callout.stop::before{content:"[x] STOP";color:var(--bad)}
+
+footer{font-family:var(--mono);font-size:.76rem}
+
+.edit-toggle{border-radius:0;font-family:var(--mono);font-size:.76rem;letter-spacing:.08em;background:var(--accent);color:var(--bg);box-shadow:none;border:1px solid var(--border)}
+.edit-toggle.editing{background:var(--bad);color:var(--bg)}
+.edit-toolbar{border-bottom-width:1px;box-shadow:none;font-family:var(--mono)}
+.edit-toolbar button,.edit-count{font-family:var(--mono);font-size:.76rem;border-radius:0}
+body.edit-mode [data-edit-id]:hover{outline-color:var(--accent)}
+
+@media print{
+  :root{
+    --bg:#fff;--card:#fbf8ea;--text:#3c3836;--muted:#6f655c;--border:#c8b89a;
+    --accent:#8f5d10;--code-bg:#f4ecd4;
+    --warn-bg:#f6dfc6;--warn:#af3a03;--bad-bg:#f5d3cf;--bad:#9d0006;
+    --ok-bg:#e9ebc8;--ok:#6f6a0d;--part-bg:#efd9e4;--part:#8f3f71;
+    --info-bg:#d6e6ea;--info:#076678;
+  }
+  body{background:#fff;color:var(--text)}
+  h2,h3{break-after:avoid}
+  .meta{background:none;border:1px solid var(--border)}
+  .meta div,.meta b,.meta span{color:var(--text)}
+  .meta div+div{border-left-color:var(--border)}
+  th{background:var(--code-bg);color:var(--text)}
+  .card,.item,.scroll,.toc,.callout{border-color:var(--border)}
+}
