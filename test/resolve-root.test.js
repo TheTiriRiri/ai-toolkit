@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const { tempDir, writeFiles, makeToolkit } = require("./support");
 
-const PACKAGE_PATH = path.join("node_modules", "@thetiriri", "10x-ai-toolkit");
+const PACKAGE_PATH = path.join("node_modules", "@thetiririri", "10x-ai-toolkit");
 
 test("postinstall installs into the project that holds node_modules", (t) => {
   const project = path.join(tempDir(t), "project");

@@ -7,8 +7,8 @@ const path = require("node:path");
 
 const { tempDir, writeFiles, makeToolkit, snapshot } = require("./support");
 
-const BEGIN = "<!-- BEGIN @thetiriri/10x-ai-toolkit -->";
-const END = "<!-- END @thetiriri/10x-ai-toolkit -->";
+const BEGIN = "<!-- BEGIN @thetiririri/10x-ai-toolkit -->";
+const END = "<!-- END @thetiririri/10x-ai-toolkit -->";
 const BLOCK = `${BEGIN}\n# Rules\n\n- One sentence per commit.\n${END}`;
 const MANIFEST = ".claude/.10x-ai-toolkit-manifest.json";
 
@@ -56,7 +56,7 @@ test("a fresh install copies every skill file, appends the rules block and recor
   assert.deepEqual(
     { ...manifest, installedAt: "<time>" },
     {
-      package: "@thetiriri/10x-ai-toolkit",
+      package: "@thetiririri/10x-ai-toolkit",
       version: "1.0.0",
       manifestVersion: 1,
       mode: "copy",
@@ -232,7 +232,7 @@ const BROKEN_MANIFESTS = [
   ["belongs to another package", JSON.stringify({ package: "@someone/else", manifestVersion: 1, files: { skills: {} } })],
   [
     "has an unknown manifestVersion",
-    JSON.stringify({ package: "@thetiriri/10x-ai-toolkit", manifestVersion: 99, files: { skills: {} } }),
+    JSON.stringify({ package: "@thetiririri/10x-ai-toolkit", manifestVersion: 99, files: { skills: {} } }),
   ],
 ];
 
@@ -254,7 +254,7 @@ const ESCAPING_ENTRIES = [
 
 for (const [label, skills] of ESCAPING_ENTRIES) {
   test(`a manifest with ${label} that escapes .claude/skills is refused and nothing is deleted`, (t) => {
-    const manifest = { package: "@thetiriri/10x-ai-toolkit", version: "1.0.0", manifestVersion: 1, files: { skills } };
+    const manifest = { package: "@thetiririri/10x-ai-toolkit", version: "1.0.0", manifestVersion: 1, files: { skills } };
     const { project, toolkit } = setup(t, { "victim.txt": VICTIM, [MANIFEST]: JSON.stringify(manifest) });
     const before = snapshot(project);
 

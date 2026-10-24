@@ -7,10 +7,10 @@ const path = require("node:path");
 
 const { tempDir, writeFiles, makeToolkit, snapshot } = require("./support");
 
-const BEGIN = "<!-- BEGIN @thetiriri/10x-ai-toolkit -->";
+const BEGIN = "<!-- BEGIN @thetiririri/10x-ai-toolkit -->";
 const MANIFEST = ".claude/.10x-ai-toolkit-manifest.json";
 const ALPHA = { "SKILL.md": "---\nname: alpha\ndescription: Alpha.\n---\nAlpha\n" };
-const PACKAGE_PATH = path.join("node_modules", "@thetiriri", "10x-ai-toolkit");
+const PACKAGE_PATH = path.join("node_modules", "@thetiririri", "10x-ai-toolkit");
 
 /** Runs one of the toolkit copy's bins as npm would: a separate node process, PROJECT_ROOT unset unless given. */
 function run(toolkitDir, bin, args, { cwd, env = {} }) {

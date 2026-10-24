@@ -6,8 +6,8 @@ const path = require("node:path");
 
 const { tempDir, writeFiles, makeToolkit, snapshot } = require("./support");
 
-const BEGIN = "<!-- BEGIN @thetiriri/10x-ai-toolkit -->";
-const END = "<!-- END @thetiriri/10x-ai-toolkit -->";
+const BEGIN = "<!-- BEGIN @thetiririri/10x-ai-toolkit -->";
+const END = "<!-- END @thetiririri/10x-ai-toolkit -->";
 const BLOCK = `${BEGIN}\n# Rules\n\n- One sentence per commit.\n${END}`;
 const MANIFEST = ".claude/.10x-ai-toolkit-manifest.json";
 
@@ -21,7 +21,7 @@ const exists = (project, relPath) => fs.existsSync(path.join(project, relPath));
 const CONSUMER = {
   "CLAUDE.md": "# My notes\n",
   "package.json": "{}\n",
-  ".npmrc": "@thetiriri:registry=https://npm.pkg.github.com\n",
+  ".npmrc": "@thetiririri:registry=https://npm.pkg.github.com\n",
   ".claude/settings.json": "{}\n",
 };
 

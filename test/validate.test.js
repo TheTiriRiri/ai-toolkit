@@ -80,7 +80,7 @@ test("a skill that points at the user's ~/.claude/skills fails", (t) => {
 
 test("rules that contain a package marker fail", (t) => {
   const dir = packageCopy(t);
-  writeFiles(dir, { "rules/CLAUDE.md": "# Rules\n<!-- END @thetiriri/10x-ai-toolkit -->\n" });
+  writeFiles(dir, { "rules/CLAUDE.md": "# Rules\n<!-- END @thetiririri/10x-ai-toolkit -->\n" });
 
   const result = validate(dir);
 
