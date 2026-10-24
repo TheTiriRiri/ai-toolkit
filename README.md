@@ -28,7 +28,7 @@ Instalator zapisuje też `.claude/.10x-ai-toolkit-manifest.json` z wersją, tryb
 3. Instalacja z katalogu głównego repozytorium, zawsze z przypiętą wersją, bo cache npx potrafi podać starą kopię:
 
    ```bash
-   npx --yes @thetiririri/10x-ai-toolkit@0.1.1
+   npx --yes @thetiririri/10x-ai-toolkit@0.1.2
    ```
 
 4. Commit zainstalowanych plików (`.claude/skills/`, manifest, `CLAUDE.md`). W trybie kopiowania artefakty jadą razem z repozytorium, także do CI i do sesji w chmurze.
@@ -38,7 +38,7 @@ Aktualizacja to ta sama komenda z nowszą wersją. Skill zmieniony lokalnie zost
 Odinstalowanie działa z samego manifestu, więc nie potrzebuje `node_modules`:
 
 ```bash
-npx --yes -p @thetiririri/10x-ai-toolkit@0.1.1 10x-ai-toolkit-uninstall
+npx --yes -p @thetiririri/10x-ai-toolkit@0.1.2 10x-ai-toolkit-uninstall
 ```
 
 Instalacja po odinstalowaniu tworzy manifest od nowa, więc nawet przy tej samej wersji `git diff` pokaże jedną zmienioną linię: `installedAt`.
