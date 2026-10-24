@@ -1,49 +1,49 @@
 # @thetiririri/10x-ai-toolkit
 
-Moje artefakty AI dla Claude Code w jednej paczce npm na GitHub Packages: skille `code-review` i `html-report` oraz reguły pracy, które instalator dokleja do `CLAUDE.md` repozytorium konsumenta.
+My AI artifacts for Claude Code in one npm package on GitHub Packages: the `code-review` and `html-report` skills, plus working rules that the installer appends to the `CLAUDE.md` of the consumer repository.
 
-## Dlaczego GitHub Packages
+## Why GitHub Packages
 
-Odbiorcą są moje własne repozytoria na jednym koncie GitHub i pracujące w nich sesje agentów, więc wybieram Model 1 z lekcji M5L4. Kosztuje on jedno pole `publishConfig` w `package.json` i jeden PAT do odczytu, a AWS CodeArtifact albo własne API z CLI dałyby infrastrukturę bez odbiorcy.
+The recipients are my own repositories on one GitHub account and the agent sessions working in them, so I choose Model 1 from lesson M5L4. It costs one `publishConfig` field in `package.json` and one read-only PAT, while AWS CodeArtifact or an API of my own with a CLI would be infrastructure without a recipient.
 
-## Zawartość
+## Contents
 
-| W paczce | U konsumenta | Co to jest |
+| In the package | In the consumer | What it is |
 | --- | --- | --- |
-| `skills/code-review/` | `.claude/skills/code-review/` | recenzja zmiany: sześć kryteriów w skali 1–10, werdykt `pass`/`fail` wyliczany z ocen, podsumowanie |
-| `skills/html-report/` | `.claude/skills/html-report/` | raport w Markdownie zamieniony na samodzielną stronę HTML |
-| `rules/CLAUDE.md` | blok między znacznikami w `CLAUDE.md` | reguły pracy |
+| `skills/code-review/` | `.claude/skills/code-review/` | change review: six criteria on a 1–10 scale, a `pass`/`fail` verdict computed from the scores, a summary |
+| `skills/html-report/` | `.claude/skills/html-report/` | a Markdown report turned into a standalone HTML page |
+| `rules/CLAUDE.md` | a block between markers in `CLAUDE.md` | working rules |
 
-Instalator zapisuje też `.claude/.10x-ai-toolkit-manifest.json` z wersją, trybem instalacji i hashem każdego wgranego pliku.
+The installer also writes `.claude/.10x-ai-toolkit-manifest.json` with the version, the install mode and the hash of every installed file.
 
-## Instalacja w repozytorium konsumenta
+## Installing in a consumer repository
 
-1. Commitowany `.npmrc` zawiera samo mapowanie scope'u, bez tokenu:
+1. The committed `.npmrc` holds only the scope mapping, no token:
 
    ```
    @thetiririri:registry=https://npm.pkg.github.com
    ```
 
-2. Odczyt wymaga PAT (classic) z uprawnieniem `read:packages`, bo rejestr npm w GitHub Packages nie przyjmuje tokenów fine-grained. Token trafia do `~/.npmrc` jako `//npm.pkg.github.com/:_authToken=…`, nigdy do repozytorium i nigdy przez czat.
-3. Instalacja z katalogu głównego repozytorium, zawsze z przypiętą wersją, bo cache npx potrafi podać starą kopię:
+2. Reading needs a PAT (classic) with the `read:packages` scope, because the npm registry of GitHub Packages does not accept fine-grained tokens. The token goes into `~/.npmrc` as `//npm.pkg.github.com/:_authToken=…`, never into the repository and never through chat.
+3. Install from the repository root, always with a pinned version, because the npx cache can serve a stale copy:
 
    ```bash
    npx --yes @thetiririri/10x-ai-toolkit@0.1.2
    ```
 
-4. Commit zainstalowanych plików (`.claude/skills/`, manifest, `CLAUDE.md`). W trybie kopiowania artefakty jadą razem z repozytorium, także do CI i do sesji w chmurze.
+4. Commit the installed files (`.claude/skills/`, the manifest, `CLAUDE.md`). In copy mode the artifacts travel with the repository, to CI and to cloud sessions too.
 
-Aktualizacja to ta sama komenda z nowszą wersją. Skill zmieniony lokalnie zostaje pominięty z ostrzeżeniem, a bin kończy się wtedy kodem 2 (błąd to kod 1), żeby skrypt nie wziął niepełnej aktualizacji za udaną. `--force` nadpisuje taki skill wersją z paczki.
+An update is the same command with a newer version. A skill changed locally is skipped with a warning, and the bin then exits with code 2 (a failure is code 1), so a script cannot take an incomplete update for a successful one. `--force` overwrites such a skill with the packaged version.
 
-Odinstalowanie działa z samego manifestu, więc nie potrzebuje `node_modules`:
+Uninstalling works from the manifest alone, so it does not need `node_modules`:
 
 ```bash
 npx --yes -p @thetiririri/10x-ai-toolkit@0.1.2 10x-ai-toolkit-uninstall
 ```
 
-Instalacja po odinstalowaniu tworzy manifest od nowa, więc nawet przy tej samej wersji zmieni się w nim co najmniej `installedAt`.
+An install after an uninstall writes the manifest anew, so even at the same version at least `installedAt` changes in it.
 
-Bramka dryfu w CI konsumenta instaluje wersję zapisaną w manifeście z `--force` i sprawdza, czy drzewo zostało czyste. W GitHub Actions npm dostaje token tylko przez `actions/setup-node` z `registry-url` i `scope`, bo sam `NODE_AUTH_TOKEN` bez nich nic nie daje. Sekret `GH_PKG_TOKEN` to PAT (classic) z `read:packages`:
+The drift gate in the consumer's CI installs the version recorded in the manifest with `--force` and checks that the tree stayed clean. In GitHub Actions npm gets the token only through `actions/setup-node` with `registry-url` and `scope`; `NODE_AUTH_TOKEN` alone does nothing without them. The `GH_PKG_TOKEN` secret is a PAT (classic) with `read:packages`:
 
 ```yaml
 - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -62,35 +62,35 @@ Bramka dryfu w CI konsumenta instaluje wersję zapisaną w manifeście z `--forc
     if [ -n "$drift" ]; then echo "$drift"; exit 1; fi
 ```
 
-Bez `--force` bin zatrzymałby się na lokalnie zmienionym skillu z kodem 2 i krok padłby bez listy różnic; z `--force` nadpisuje skill, a `git status` pokazuje, co się rozjechało. `git status` zamiast `git diff --exit-code`, bo instalacja przywraca skasowany plik skilla jako nieśledzony, a `git diff` takich nie widzi. Z tego samego powodu `.claude/skills/` i manifest muszą być w repozytorium i poza `.gitignore`, bo ignorowany katalog chowa dryf przed `git status`. Żeby ignorować `.claude/settings.local.json`, wpisz do `.gitignore` sam ten plik, a nie cały katalog `.claude/`.
+Without `--force` the bin would stop at a locally changed skill with code 2 and the step would fail without a list of differences; with `--force` it overwrites the skill, and `git status` shows what drifted. The gate uses `git status` rather than `git diff --exit-code` because the install restores a deleted skill file as untracked, and `git diff` does not see untracked files. For the same reason `.claude/skills/` and the manifest must be in the repository and outside `.gitignore`: an ignored directory hides drift from `git status`. To ignore `.claude/settings.local.json`, put that file alone in `.gitignore`, not the whole `.claude/` directory.
 
-CI może też obejść się bez PAT. W ustawieniach paczki, w „Manage Actions access”, dodaj repozytorium konsumenta z rolą Read, a workflow dostaje `permissions: { contents: read, packages: read }` i `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`. Ta droga wynika z dokumentacji GitHuba; `ai-review-lab` używa PAT, a do instalacji lokalnej PAT i tak jest potrzebny.
+CI can also do without a PAT. In the package settings, under "Manage Actions access", add the consumer repository with the Read role; the workflow then gets `permissions: { contents: read, packages: read }` and `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`. This route comes from GitHub's documentation; `ai-review-lab` uses a PAT, and a local install needs the PAT anyway.
 
-## Jak działa instalator
+## How the installer works
 
-- **Znaczniki.** Reguły stoją w `CLAUDE.md` między `<!-- BEGIN @thetiririri/10x-ai-toolkit -->` a `<!-- END @thetiririri/10x-ai-toolkit -->`. Każdy znacznik stoi w osobnej linii, a znacznik zacytowany w środku zdania nie jest znacznikiem. Każda instalacja podmienia tylko ten blok, a notatki poza nim zostają. Niesparowany albo powtórzony znacznik zatrzymuje instalację, zanim zmieni się choćby jeden plik, a reguły zawierające znacznik są odrzucane. Blok przyjmuje końce linii pliku (CRLF albo LF), więc zmiana końców linii w całym pliku nie jest ani ręczną edycją bloku, ani dryfem.
-- **Manifest.** Deinstalator usuwa wyłącznie pliki z manifestu i tylko te, których hash się zgadza; zmienione zostają, chyba że podasz `--force`. `CLAUDE.md` znika tylko wtedy, gdy utworzyła go instalacja i poza blokiem nic w nim nie zostało. `.npmrc` i `package.json` konsumenta nigdy nie są dotykane. Nieczytelny manifest, ścieżka w nim wychodząca poza `.claude/skills/` albo dowiązanie symboliczne, przez które zapis lub usunięcie wyszłoby poza katalog projektu, zatrzymuje oba skrypty, zanim zmieni się jakikolwiek plik. Dowiązanie wewnątrz projektu (np. `CLAUDE.md` → `AGENTS.md`) działa normalnie.
-- **Idempotencja.** Druga instalacja tej samej wersji nie zmienia ani bajtu, łącznie z `installedAt` w manifeście, więc `git status` zostaje czysty.
-- **Katalog docelowy.** Przez `npx` (tryb kopiowania) paczka instaluje się do bieżącego katalogu i odmawia, gdy ten nie wygląda na projekt: brak `.git`, `package.json`, `.claude/` i `CLAUDE.md`. Jako zależność (`npm install`) `postinstall` instaluje do projektu nad `node_modules`, a przy instalacji globalnej nic nie robi. `PROJECT_ROOT` wskazuje katalog docelowy w obu trybach (ścieżkę względną liczy od katalogu, w którym uruchomiono `npx` albo `npm install`), z jednym wyjątkiem: w cache npx `postinstall` zawsze się pomija, bo zaraz po nim instaluje bin. Błąd w `postinstall` jest tylko ostrzeżeniem, żeby nie przerwać `npm install`. npm 7+ ukrywa jednak wyjście `postinstall` (widać je tylko z `--foreground-scripts`), więc problemy, np. pominięty skill, zgłasza dopiero bin uruchomiony przez `npx`.
+- **Markers.** The rules sit in `CLAUDE.md` between `<!-- BEGIN @thetiririri/10x-ai-toolkit -->` and `<!-- END @thetiririri/10x-ai-toolkit -->`. Each marker stands on a line of its own, and a marker quoted inside a sentence is not a marker. Every install replaces only this block, and notes outside it stay. An unpaired or repeated marker stops the install before a single file changes, and rules that contain a marker are refused. The block takes the file's line endings (CRLF or LF), so converting the line endings of the whole file is neither a hand edit of the block nor drift.
+- **Manifest.** The uninstaller removes only the files in the manifest, and only those whose hash matches; changed ones stay unless you pass `--force`. `CLAUDE.md` is removed only when the install created it and nothing but the block is left in it. The consumer's `.npmrc` and `package.json` are never touched. An unreadable manifest, a path in it that leads outside `.claude/skills/`, or a symlink through which a write or delete would leave the project directory stops both scripts before any file changes. A link inside the project (e.g. `CLAUDE.md` → `AGENTS.md`) works normally.
+- **Idempotence.** A second install of the same version changes no byte, `installedAt` in the manifest included, so `git status` stays clean.
+- **Target directory.** Through `npx` (copy mode) the package installs into the current directory and refuses when it does not look like a project: no `.git`, `package.json`, `.claude/` or `CLAUDE.md`. As a dependency (`npm install`), `postinstall` installs into the project above `node_modules`, and a global install does nothing. `PROJECT_ROOT` points at the target directory in both modes (a relative path counts from the directory where `npx` or `npm install` was run), with one exception: in the npx cache `postinstall` always skips, because the bin installs right after it. A failure in `postinstall` is only a warning, so that it does not break `npm install`. npm 7+ hides the output of `postinstall`, though (it shows only with `--foreground-scripts`), so problems such as a skipped skill are reported only by the bin run through `npx`.
 
-## Kolizje nazw skilli w Claude Code
+## Skill name collisions in Claude Code
 
-- Projektowy `code-review` zastępuje wbudowane `/code-review`, a wbudowana recenzja zostaje pod aliasem `/review`.
-- Skill osobisty wygrywa z projektowym: na maszynie z `~/.claude/skills/html-report` komenda `/html-report` uruchamia tamtą kopię, a nie tę z paczki.
+- The project `code-review` replaces the built-in `/code-review`, and the built-in review stays available under the `/review` alias.
+- A personal skill wins over a project one: on a machine with `~/.claude/skills/html-report`, `/html-report` runs that copy, not the packaged one.
 
-## Wydanie nowej wersji
+## Releasing a new version
 
-1. Zmiana w `skills/`, `rules/` albo `lib/` i commit na `main`.
-2. `npm version patch -m "Release %s."` (albo `minor`) tworzy commit z wersją i tag `vX.Y.Z`.
-3. `git push origin main --follow-tags`. Push tagu **publikuje** wersję. GitHub Packages odrzuca ponowną publikację tej samej wersji (409), więc poprawka to zawsze nowa wersja.
+1. Change `skills/`, `rules/` or `lib/` and commit on `main`.
+2. `npm version patch -m "Release %s."` (or `minor`) creates the version commit and the `vX.Y.Z` tag.
+3. `git push origin main --follow-tags`. Pushing the tag **publishes** the version. GitHub Packages rejects publishing the same version again (409), so a fix is always a new version.
 
-Workflow `.github/workflows/publish-10x-ai-toolkit.yml` waliduje każdy push i PR, a publikuje tylko z tagu `v*`. Przed publikacją sprawdza, że tag równa się wersji z `package.json` i wskazuje commit z `main`, ostrzega, gdy od poprzedniego tagu nie zmienił się żaden plik paczki, i pomija wersję już opublikowaną. Publikuje tokenem `GITHUB_TOKEN`, a `packages: write` ma tylko job publikacji.
+The workflow `.github/workflows/publish-10x-ai-toolkit.yml` validates every push and PR, and publishes only from a `v*` tag. Before publishing it checks that the tag equals the `package.json` version and points at a commit on `main`, warns when no packaged file changed since the previous tag, and skips a version that is already published. It publishes with `GITHUB_TOKEN`, and only the publish job has `packages: write`.
 
-## Rozwój
+## Development
 
-Paczka nie ma zależności ani lockfile'a i wymaga Node 22 lub nowszego.
+The package has no dependencies and no lockfile, and needs Node 22 or newer.
 
 ```bash
-npm test           # testy node:test
-npm run validate   # frontmatter skilli, reguły bez znaczników, składnia, testy i dokładna lista plików z npm pack
+npm test           # node:test tests
+npm run validate   # skill frontmatter, rules without markers, syntax, tests and the exact npm pack file list
 ```
