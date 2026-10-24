@@ -393,6 +393,16 @@ test("a CLAUDE.md symlinked to another file inside the project gets the block in
   assert.equal(fs.lstatSync(path.join(project, "CLAUDE.md")).isSymbolicLink(), true);
 });
 
+test("a CLAUDE.md hard-linked to AGENTS.md stays one file, so AGENTS.md gets the block too", (t) => {
+  const { project, toolkit } = setup(t, { "AGENTS.md": "# Agents\n", "package.json": "{}\n" });
+  fs.linkSync(path.join(project, "AGENTS.md"), path.join(project, "CLAUDE.md"));
+
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+
+  assert.equal(read(project, "AGENTS.md"), `# Agents\n\n${BLOCK}\n`);
+  assert.equal(fs.statSync(path.join(project, "CLAUDE.md")).nlink, 2);
+});
+
 test("broken markers in CLAUDE.md stop the install before any file changes", (t) => {
   const { project, toolkit } = setup(t, { "CLAUDE.md": `# My notes\n${BEGIN}\n` });
   const before = snapshot(project);
