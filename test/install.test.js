@@ -263,6 +263,20 @@ test("an install that dies halfway through writing a skill file can be rerun wit
   assert.equal(read(project, ".claude/skills/alpha/SKILL.md"), ALPHA_V2["SKILL.md"]);
 });
 
+test("a failed write still names the file in the bin's error line, although the write syscall gives no path", (t) => {
+  const { project, toolkit } = setup(t);
+  const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+  failWritesTo(t, "CLAUDE.md");
+  let errors = "";
+  const io = { stdout: { write() {} }, stderr: { write: (text) => (errors += text) } };
+
+  const status = kit.runInstall([], { cwd: project, env: {}, ...io });
+
+  assert.equal(status, 1);
+  assert.match(errors, /ENOSPC.*CLAUDE\.md/);
+  assert.doesNotMatch(errors, /\n\s+at /);
+});
+
 test("rewriting CLAUDE.md keeps its file mode, so git sees no mode change", (t) => {
   const { project, toolkit } = setup(t);
   fs.chmodSync(path.join(project, "CLAUDE.md"), 0o600);
