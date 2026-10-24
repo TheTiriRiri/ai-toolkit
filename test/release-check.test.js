@@ -110,6 +110,17 @@ test("a tag on a commit that is not on main stops the release", (t) => {
   assert.equal(result.outputs, "");
 });
 
+test("a checkout without origin/main stops the release and points at fetch-depth", (t) => {
+  const dir = repoAt(t, "0.1.0");
+  git(dir, "remote", "remove", "origin");
+
+  const result = check(t, dir, "v0.1.0", "missing-package");
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /fetch-depth/);
+  assert.equal(result.outputs, "");
+});
+
 test("a re-run after main moved past the tag still passes the main check", (t) => {
   const dir = repoAt(t, "0.1.0");
   writeFiles(dir, { "docs/notes.md": "Later notes\n" });

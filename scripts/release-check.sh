@@ -16,8 +16,12 @@ if [ "$tag" != "v$version" ]; then
   exit 1
 fi
 
-# Ancestry, not equality: a re-run after main moved on must still pass. origin/main comes from fetch-depth: 0.
-if ! git merge-base --is-ancestor "$tag" origin/main 2>/dev/null; then
+if ! git rev-parse --verify --quiet origin/main > /dev/null; then
+  echo "::error::origin/main is missing; the publish job's checkout needs fetch-depth: 0" >&2
+  exit 1
+fi
+# Ancestry, not equality: a re-run after main moved on must still pass.
+if ! git merge-base --is-ancestor "$tag" origin/main; then
   echo "::error::tag $tag is not on origin/main; release from a commit of main" >&2
   exit 1
 fi
