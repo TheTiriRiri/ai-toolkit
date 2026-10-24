@@ -59,6 +59,18 @@ test("PROJECT_ROOT overrides the node_modules location in postinstall", (t) => {
   assert.deepEqual(toolkit.resolveRoot({ mode: "postinstall", env: { PROJECT_ROOT: other } }), { root: other });
 });
 
+test("without INIT_CWD a relative PROJECT_ROOT in postinstall is taken from the current directory", (t) => {
+  const base = tempDir(t);
+  const project = path.join(base, "project");
+  writeFiles(project, { "package.json": "{}\n" });
+  fs.mkdirSync(path.join(base, "other"));
+  const toolkit = makeToolkit(path.join(project, PACKAGE_PATH));
+
+  assert.deepEqual(toolkit.resolveRoot({ mode: "postinstall", env: { PROJECT_ROOT: "other" }, cwd: base }), {
+    root: path.join(base, "other"),
+  });
+});
+
 for (const sign of [".git/", "package.json", ".claude/", "CLAUDE.md"]) {
   test(`the bin installs into the current directory when it has ${sign}`, (t) => {
     const project = tempDir(t);
@@ -84,6 +96,16 @@ test("PROJECT_ROOT lets the bin install outside the current directory", (t) => {
 
   assert.deepEqual(toolkit.resolveRoot({ mode: "copy", env: { PROJECT_ROOT: project }, cwd: stray }), {
     root: project,
+  });
+});
+
+test("a relative PROJECT_ROOT for the bin is taken from the current directory", (t) => {
+  const base = tempDir(t);
+  fs.mkdirSync(path.join(base, "project"));
+  const toolkit = makeToolkit(path.join(tempDir(t), "toolkit"));
+
+  assert.deepEqual(toolkit.resolveRoot({ mode: "copy", env: { PROJECT_ROOT: "project" }, cwd: base }), {
+    root: path.join(base, "project"),
   });
 });
 
