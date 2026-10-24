@@ -93,13 +93,13 @@ for (const [label, code, file, prepare] of FILESYSTEM_FAULTS) {
   });
 }
 
-test("the install bin passes --force through, overwriting an edited skill", (t) => {
+test("the install bin exits 2 when it skips an edited skill, and --force overwrites it", (t) => {
   const { project, toolkitDir } = setup(t);
   run(toolkitDir, "install.js", [], { cwd: project });
   writeFiles(project, { ".claude/skills/alpha/SKILL.md": "my own alpha\n" });
 
   const skipped = run(toolkitDir, "install.js", [], { cwd: project });
-  assert.equal(skipped.status, 0);
+  assert.equal(skipped.status, 2);
   assert.match(skipped.stderr, /alpha/);
   assert.equal(read(project, ".claude/skills/alpha/SKILL.md"), "my own alpha\n");
 
@@ -146,6 +146,21 @@ test("postinstall resolves a relative PROJECT_ROOT against the directory npm was
 
   assert.equal(result.status, 0, result.stderr);
   assert.equal(read(other, ".claude/skills/alpha/SKILL.md"), ALPHA["SKILL.md"]);
+});
+
+test("postinstall exits 0 when it skips an edited skill, so npm install keeps going", (t) => {
+  const project = path.join(tempDir(t), "project");
+  writeFiles(project, { "package.json": "{}\n" });
+  const toolkitDir = path.join(project, PACKAGE_PATH);
+  makeToolkit(toolkitDir, { skills: { alpha: ALPHA } });
+  run(toolkitDir, "install.js", ["--postinstall"], { cwd: toolkitDir });
+  writeFiles(project, { ".claude/skills/alpha/SKILL.md": "my own alpha\n" });
+
+  const result = run(toolkitDir, "install.js", ["--postinstall"], { cwd: toolkitDir });
+
+  assert.equal(result.status, 0);
+  assert.match(result.stderr, /skipped skill alpha/);
+  assert.equal(read(project, ".claude/skills/alpha/SKILL.md"), "my own alpha\n");
 });
 
 test("postinstall only warns and exits 0 on broken markers, so npm install keeps going", (t) => {

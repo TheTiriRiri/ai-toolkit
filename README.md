@@ -33,7 +33,7 @@ Instalator zapisuje też `.claude/.10x-ai-toolkit-manifest.json` z wersją, tryb
 
 4. Commit zainstalowanych plików (`.claude/skills/`, manifest, `CLAUDE.md`). W trybie kopiowania artefakty jadą razem z repozytorium, także do CI i do sesji w chmurze.
 
-Aktualizacja to ta sama komenda z nowszą wersją. Skill zmieniony lokalnie zostaje pominięty z ostrzeżeniem, a `--force` nadpisuje go wersją z paczki.
+Aktualizacja to ta sama komenda z nowszą wersją. Skill zmieniony lokalnie zostaje pominięty z ostrzeżeniem, a bin kończy się wtedy kodem 2 (błąd to kod 1), żeby skrypt nie wziął niepełnej aktualizacji za udaną. `--force` nadpisuje taki skill wersją z paczki.
 
 Odinstalowanie działa z samego manifestu, więc nie potrzebuje `node_modules`:
 
