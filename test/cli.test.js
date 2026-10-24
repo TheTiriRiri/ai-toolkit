@@ -64,6 +64,35 @@ test("the install bin refuses a directory that does not look like a project", (t
   assert.deepEqual(snapshot(stray), {});
 });
 
+const FILESYSTEM_FAULTS = [
+  ["CLAUDE.md is a directory", "EISDIR", /CLAUDE\.md/, (project) => fs.mkdirSync(path.join(project, "CLAUDE.md"))],
+  [".claude is a file", "ENOTDIR", /\.claude/, (project) => fs.writeFileSync(path.join(project, ".claude"), "not a directory\n")],
+  [
+    ".claude/skills is read-only",
+    "EACCES",
+    /\.claude\/skills/,
+    (project) => {
+      fs.mkdirSync(path.join(project, ".claude/skills"), { recursive: true });
+      fs.chmodSync(path.join(project, ".claude/skills"), 0o555);
+    },
+  ],
+];
+
+for (const [label, code, file, prepare] of FILESYSTEM_FAULTS) {
+  const skip = code === "EACCES" && process.getuid?.() === 0 && "root ignores file permissions";
+  test(`the install bin exits 1 with ${code} and the file, not a stack trace, when ${label}`, { skip }, (t) => {
+    const { project, toolkitDir } = setup(t, { "package.json": "{}\n" });
+    prepare(project);
+
+    const result = run(toolkitDir, "install.js", [], { cwd: project });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, new RegExp(code));
+    assert.match(result.stderr, file);
+    assert.doesNotMatch(result.stderr, /\n\s+at /);
+  });
+}
+
 test("the install bin passes --force through, overwriting an edited skill", (t) => {
   const { project, toolkitDir } = setup(t);
   run(toolkitDir, "install.js", [], { cwd: project });
