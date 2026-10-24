@@ -227,6 +227,51 @@ test("a CLAUDE.md converted to CRLF after the install is left alone by a forced 
   assert.deepEqual(summary.warnings, []);
 });
 
+/** Every fs.writeFileSync to a path containing `name` writes half its data and then fails like a full disk. */
+function failWritesTo(t, name) {
+  const write = fs.writeFileSync;
+  t.mock.method(fs, "writeFileSync", (file, data, ...rest) => {
+    if (!String(file).includes(name)) return write(file, data, ...rest);
+    const bytes = Buffer.from(data);
+    write(file, bytes.subarray(0, Math.floor(bytes.length / 2)), ...rest);
+    throw Object.assign(new Error("ENOSPC: no space left on device, write"), { code: "ENOSPC", syscall: "write" });
+  });
+}
+
+test("an install that dies halfway through writing CLAUDE.md leaves the old file whole and no temporary file", (t) => {
+  const { project, toolkit } = setup(t);
+  const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+  failWritesTo(t, "CLAUDE.md");
+
+  assert.throws(() => kit.install({ root: project }), /ENOSPC/);
+
+  assert.equal(read(project, "CLAUDE.md"), "# My notes\n");
+  assert.deepEqual(fs.readdirSync(project).sort(), [".claude", "CLAUDE.md", "package.json"]);
+});
+
+test("an install that dies halfway through writing a skill file can be rerun without --force", (t) => {
+  const { project, toolkit } = setup(t);
+  toolkit({ version: "1.0.0", skills: { alpha: ALPHA_V1 } }).install({ root: project });
+  const v2 = toolkit({ version: "2.0.0", skills: { alpha: ALPHA_V2 } });
+  failWritesTo(t, "SKILL.md");
+  assert.throws(() => v2.install({ root: project }), /ENOSPC/);
+  t.mock.restoreAll();
+
+  const summary = v2.install({ root: project });
+
+  assert.deepEqual(summary.skipped, []);
+  assert.equal(read(project, ".claude/skills/alpha/SKILL.md"), ALPHA_V2["SKILL.md"]);
+});
+
+test("rewriting CLAUDE.md keeps its file mode, so git sees no mode change", (t) => {
+  const { project, toolkit } = setup(t);
+  fs.chmodSync(path.join(project, "CLAUDE.md"), 0o600);
+
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+
+  assert.equal(fs.statSync(path.join(project, "CLAUDE.md")).mode & 0o777, 0o600);
+});
+
 const BROKEN_MANIFESTS = [
   ["is not JSON", "{ not json"],
   ["belongs to another package", JSON.stringify({ package: "@someone/else", manifestVersion: 1, files: { skills: {} } })],
