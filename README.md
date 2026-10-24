@@ -41,7 +41,7 @@ Odinstalowanie działa z samego manifestu, więc nie potrzebuje `node_modules`:
 npx --yes -p @thetiririri/10x-ai-toolkit@0.1.2 10x-ai-toolkit-uninstall
 ```
 
-Instalacja po odinstalowaniu tworzy manifest od nowa, więc nawet przy tej samej wersji `git diff` pokaże jedną zmienioną linię: `installedAt`.
+Instalacja po odinstalowaniu tworzy manifest od nowa, więc nawet przy tej samej wersji zmieni się w nim co najmniej `installedAt`.
 
 Bramka dryfu w CI konsumenta instaluje wersję zapisaną w manifeście z `--force` i sprawdza, czy drzewo zostało czyste. W GitHub Actions npm dostaje token tylko przez `actions/setup-node` z `registry-url` i `scope`, bo sam `NODE_AUTH_TOKEN` bez nich nic nie daje. Sekret `GH_PKG_TOKEN` to PAT (classic) z `read:packages`:
 
@@ -62,7 +62,7 @@ Bramka dryfu w CI konsumenta instaluje wersję zapisaną w manifeście z `--forc
     if [ -n "$drift" ]; then echo "$drift"; exit 1; fi
 ```
 
-Bez `--force` lokalnie zmieniony skill zostałby pominięty i dryf by nie wyszedł. `git status` zamiast `git diff --exit-code`, bo instalacja przywraca skasowany plik skilla jako nieśledzony, a `git diff` takich nie widzi. Z tego samego powodu `.claude/skills/` i manifest muszą być w repozytorium i poza `.gitignore`, bo ignorowany katalog chowa dryf przed `git status`. Żeby ignorować `.claude/settings.local.json`, wpisz do `.gitignore` sam ten plik, a nie cały katalog `.claude/`.
+Bez `--force` bin zatrzymałby się na lokalnie zmienionym skillu z kodem 2 i krok padłby bez listy różnic; z `--force` nadpisuje skill, a `git status` pokazuje, co się rozjechało. `git status` zamiast `git diff --exit-code`, bo instalacja przywraca skasowany plik skilla jako nieśledzony, a `git diff` takich nie widzi. Z tego samego powodu `.claude/skills/` i manifest muszą być w repozytorium i poza `.gitignore`, bo ignorowany katalog chowa dryf przed `git status`. Żeby ignorować `.claude/settings.local.json`, wpisz do `.gitignore` sam ten plik, a nie cały katalog `.claude/`.
 
 CI może też obejść się bez PAT. W ustawieniach paczki, w „Manage Actions access”, dodaj repozytorium konsumenta z rolą Read, a workflow dostaje `permissions: { contents: read, packages: read }` i `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`. Ta droga wynika z dokumentacji GitHuba; `ai-review-lab` używa PAT, a do instalacji lokalnej PAT i tak jest potrzebny.
 
