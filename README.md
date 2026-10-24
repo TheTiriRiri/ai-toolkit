@@ -80,7 +80,7 @@ Bez `--force` lokalnie zmieniony skill zostałby pominięty i dryf by nie wyszed
 2. `npm version patch -m "Release %s."` (albo `minor`) tworzy commit z wersją i tag `vX.Y.Z`.
 3. `git push origin main --follow-tags`. Push tagu **publikuje** wersję. GitHub Packages odrzuca ponowną publikację tej samej wersji (409), więc poprawka to zawsze nowa wersja.
 
-Workflow `.github/workflows/publish-10x-ai-toolkit.yml` waliduje każdy push i PR, a publikuje tylko z tagu `v*`. Przed publikacją sprawdza, że tag równa się wersji z `package.json`, ostrzega, gdy od poprzedniego tagu nie zmienił się żaden plik paczki, i pomija wersję już opublikowaną. Publikuje tokenem `GITHUB_TOKEN`, a `packages: write` ma tylko job publikacji.
+Workflow `.github/workflows/publish-10x-ai-toolkit.yml` waliduje każdy push i PR, a publikuje tylko z tagu `v*`. Przed publikacją sprawdza, że tag równa się wersji z `package.json` i wskazuje commit z `main`, ostrzega, gdy od poprzedniego tagu nie zmienił się żaden plik paczki, i pomija wersję już opublikowaną. Publikuje tokenem `GITHUB_TOKEN`, a `packages: write` ma tylko job publikacji.
 
 ## Rozwój
 

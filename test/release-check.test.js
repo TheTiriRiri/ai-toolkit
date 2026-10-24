@@ -43,20 +43,28 @@ function commitAndTag(dir, version) {
   git(dir, "tag", "-a", `v${version}`, "-m", `Release ${version}.`);
 }
 
-/** A git repository with the release script and a package at `version`, committed and tagged. */
+// Pushing to a bare origin sets origin/main, which the publish job's checkout (fetch-depth: 0) also has.
+const pushMain = (dir) => git(dir, "push", "-q", "origin", "main");
+
+/** A git repository with the release script and a package at `version`, committed, tagged and pushed to origin. */
 function repoAt(t, version) {
-  const dir = path.join(tempDir(t), "repo");
+  const base = tempDir(t);
+  const dir = path.join(base, "repo");
   writeFiles(dir, { "package.json": packageJson(version), "skills/alpha/SKILL.md": ALPHA, "docs/notes.md": "Notes\n" });
   fs.cpSync(path.join(REPO, "scripts"), path.join(dir, "scripts"), { recursive: true });
   git(dir, "init", "-q", "-b", "main");
+  git(base, "init", "-q", "--bare", "origin.git");
+  git(dir, "remote", "add", "origin", path.join(base, "origin.git"));
   commitAndTag(dir, version);
+  pushMain(dir);
   return dir;
 }
 
-/** Bumps package.json to `version` (with `extra` fields), writes `files`, commits and tags the release. */
+/** Bumps package.json to `version` (with `extra` fields), writes `files`, commits, tags and pushes the release. */
 function release(dir, version, files = {}, extra = {}) {
   writeFiles(dir, { "package.json": packageJson(version, extra), ...files });
   commitAndTag(dir, version);
+  pushMain(dir);
 }
 
 /** Runs release-check.sh for `tag` against a registry that answers `registry`; returns the process and its outputs. */
@@ -87,6 +95,31 @@ test("a tag that does not match the package.json version stops the release", (t)
   assert.equal(result.status, 1);
   assert.match(result.stderr, /v0\.2\.0/);
   assert.equal(result.outputs, "");
+});
+
+test("a tag on a commit that is not on main stops the release", (t) => {
+  const dir = repoAt(t, "0.1.0");
+  git(dir, "checkout", "-q", "-b", "side");
+  writeFiles(dir, { "package.json": packageJson("0.1.1"), "skills/alpha/SKILL.md": `${ALPHA}\nSide.\n` });
+  commitAndTag(dir, "0.1.1");
+
+  const result = check(t, dir, "v0.1.1", "missing-version");
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /v0\.1\.1.*main/);
+  assert.equal(result.outputs, "");
+});
+
+test("a re-run after main moved past the tag still passes the main check", (t) => {
+  const dir = repoAt(t, "0.1.0");
+  writeFiles(dir, { "docs/notes.md": "Later notes\n" });
+  git(dir, "commit", "-q", "-am", "Later.");
+  pushMain(dir);
+
+  const result = check(t, dir, "v0.1.0", "0.1.0");
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.outputs, "publish=false\n");
 });
 
 test("the first release of a package the registry does not know yet is published, without a warning", (t) => {

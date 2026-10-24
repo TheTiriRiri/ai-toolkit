@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Gate of the publish job, which runs for v* tags only. Fails when the tag is not v<package.json version>,
-# warns when no packaged file changed since the previous tag (a version bump alone is not a change), and writes
+# Gate of the publish job, which runs for v* tags only. Fails when the tag is not v<package.json version> or not
+# on main, warns when no packaged file changed since the previous tag (a version bump alone is not a change), and writes
 # publish=false to $GITHUB_OUTPUT when the version is already in the registry, so a re-run skips instead of 409.
 # Usage: bash scripts/release-check.sh <tag>
 set -euo pipefail
@@ -13,6 +13,12 @@ version=$(node -p 'require("./package.json").version')
 
 if [ "$tag" != "v$version" ]; then
   echo "::error::tag $tag does not match package.json version $version; tag the release as v$version" >&2
+  exit 1
+fi
+
+# Ancestry, not equality: a re-run after main moved on must still pass. origin/main comes from fetch-depth: 0.
+if ! git merge-base --is-ancestor "$tag" origin/main 2>/dev/null; then
+  echo "::error::tag $tag is not on origin/main; release from a commit of main" >&2
   exit 1
 fi
 
