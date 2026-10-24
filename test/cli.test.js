@@ -131,6 +131,23 @@ test("postinstall under a project's node_modules installs into that project", (t
   assert.equal(JSON.parse(read(project, MANIFEST)).mode, "postinstall");
 });
 
+test("postinstall resolves a relative PROJECT_ROOT against the directory npm was run from, not the package", (t) => {
+  const base = tempDir(t);
+  const project = path.join(base, "project");
+  const other = path.join(base, "other");
+  writeFiles(project, { "package.json": "{}\n" });
+  fs.mkdirSync(other);
+  const toolkitDir = path.join(project, PACKAGE_PATH);
+  makeToolkit(toolkitDir, { skills: { alpha: ALPHA } });
+
+  // npm runs lifecycle scripts in the package directory and records where it was started in INIT_CWD.
+  const env = { PROJECT_ROOT: "../other", INIT_CWD: project };
+  const result = run(toolkitDir, "install.js", ["--postinstall"], { cwd: toolkitDir, env });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(read(other, ".claude/skills/alpha/SKILL.md"), ALPHA["SKILL.md"]);
+});
+
 test("postinstall only warns and exits 0 on broken markers, so npm install keeps going", (t) => {
   const project = path.join(tempDir(t), "project");
   writeFiles(project, { "package.json": "{}\n", "CLAUDE.md": `# My notes\n${BEGIN}\n` });
