@@ -333,6 +333,32 @@ test("a managed file that is a symlink out of the project stops a forced install
   assert.equal(fs.readFileSync(victim, "utf8"), "not yours\n");
 });
 
+test("a symlink planted where the temporary file of a write goes is refused, never written through", (t) => {
+  const { project, toolkit } = setup(t);
+  const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+  const victim = path.join(path.dirname(project), "victim.txt");
+  fs.writeFileSync(victim, "not yours\n");
+  // A cloned repo can carry such links. Fixed random bytes make the temporary name predictable for the test;
+  // the pid-only name is what 0.1.1 used.
+  t.mock.method(crypto, "randomBytes", (size) => Buffer.alloc(size, 0xab));
+  for (const name of [`CLAUDE.md.tmp-${process.pid}`, `CLAUDE.md.tmp-${process.pid}-abababababab`]) {
+    fs.symlinkSync(victim, path.join(project, name));
+  }
+
+  assert.throws(() => kit.install({ root: project }), /EEXIST/);
+  assert.equal(fs.readFileSync(victim, "utf8"), "not yours\n");
+  assert.equal(fs.lstatSync(path.join(project, "CLAUDE.md")).isSymbolicLink(), false);
+});
+
+test("a temporary file left by a killed run does not block a later install under the same pid", (t) => {
+  const { project, toolkit } = setup(t);
+  fs.writeFileSync(path.join(project, `CLAUDE.md.tmp-${process.pid}`), "left by a killed run\n");
+
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+
+  assert.equal(read(project, "CLAUDE.md"), `# My notes\n\n${BLOCK}\n`);
+});
+
 test("a CLAUDE.md symlink to a missing file stops the install before anything is created", (t) => {
   const { project, toolkit } = setup(t, { "package.json": "{}\n" });
   const missing = path.join(path.dirname(project), "CLAUDE-elsewhere.md");
