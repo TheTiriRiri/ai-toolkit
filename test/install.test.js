@@ -403,6 +403,21 @@ test("a CLAUDE.md hard-linked to AGENTS.md stays one file, so AGENTS.md gets the
   assert.equal(fs.statSync(path.join(project, "CLAUDE.md")).nlink, 2);
 });
 
+for (const managed of [".claude/skills/alpha/SKILL.md", MANIFEST]) {
+  test(`a hard-linked ${managed} is split by an update, so a snapshot made with cp -al keeps its copy`, (t) => {
+    const { project, toolkit } = setup(t);
+    toolkit({ version: "1.0.0", skills: { alpha: ALPHA_V1 } }).install({ root: project });
+    const snapshotCopy = path.join(path.dirname(project), "snapshot-copy");
+    fs.linkSync(path.join(project, managed), snapshotCopy);
+    const before = fs.readFileSync(snapshotCopy, "utf8");
+
+    toolkit({ version: "2.0.0", skills: { alpha: ALPHA_V2 } }).install({ root: project });
+
+    assert.equal(fs.readFileSync(snapshotCopy, "utf8"), before);
+    assert.equal(fs.statSync(path.join(project, managed)).nlink, 1);
+  });
+}
+
 test("broken markers in CLAUDE.md stop the install before any file changes", (t) => {
   const { project, toolkit } = setup(t, { "CLAUDE.md": `# My notes\n${BEGIN}\n` });
   const before = snapshot(project);
