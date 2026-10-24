@@ -362,6 +362,8 @@ test("a symlink planted where the temporary file of a write goes is refused, nev
   assert.throws(() => kit.install({ root: project }), /EEXIST/);
   assert.equal(fs.readFileSync(victim, "utf8"), "not yours\n");
   assert.equal(fs.lstatSync(path.join(project, "CLAUDE.md")).isSymbolicLink(), false);
+  // The run did not create the entry it refused, so it does not delete it either.
+  assert.equal(fs.lstatSync(path.join(project, `CLAUDE.md.tmp-${process.pid}-abababababab`)).isSymbolicLink(), true);
 });
 
 test("a temporary file left by a killed run does not block a later install under the same pid", (t) => {
