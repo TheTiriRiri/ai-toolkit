@@ -438,3 +438,115 @@ test("packaged rules that carry a marker stop the install before any file change
   );
   assert.deepEqual(snapshot(project), before);
 });
+
+// Up to 0.1.3 the package was @thetiririri/10x-ai-toolkit: installing over such an install would keep its block in
+// CLAUDE.md next to the new one, so the install refuses, with a way out that fits what is left of the old install.
+const LEGACY_BEGIN = "<!-- BEGIN @thetiririri/10x-ai-toolkit -->";
+const LEGACY_END = "<!-- END @thetiririri/10x-ai-toolkit -->";
+const LEGACY_BLOCK = `${LEGACY_BEGIN}\n# Old rules\n${LEGACY_END}`;
+const LEGACY_MANIFEST = ".claude/.10x-ai-toolkit-manifest.json";
+const LEGACY_UNINSTALL = "npx --yes -p @thetiririri/10x-ai-toolkit@0.1.3 10x-ai-toolkit-uninstall";
+const legacyManifest = (rules) =>
+  JSON.stringify({
+    package: "@thetiririri/10x-ai-toolkit",
+    version: "0.1.3",
+    manifestVersion: 1,
+    mode: "copy",
+    files: { skills: { alpha: { files: ["SKILL.md"], contentHashes: { "SKILL.md": sha256(ALPHA_V1["SKILL.md"]) } } }, rules },
+  });
+
+// An old install, or something the old uninstaller cannot read: it goes first, unless the user wants to keep edits.
+const LEGACY_INSTALLED = [
+  [
+    "a complete @thetiririri/10x-ai-toolkit install",
+    {
+      "CLAUDE.md": `# My notes\n\n${LEGACY_BLOCK}\n`,
+      [LEGACY_MANIFEST]: legacyManifest({ file: "CLAUDE.md", blockHash: sha256(LEGACY_BLOCK), createdFile: false }),
+      ".claude/skills/alpha/SKILL.md": ALPHA_V1["SKILL.md"],
+    },
+  ],
+  ["an old manifest that is not JSON", { "CLAUDE.md": "# My notes\n", [LEGACY_MANIFEST]: "{ not json" }],
+  ["a directory where the old manifest goes", { "CLAUDE.md": "# My notes\n", [`${LEGACY_MANIFEST}/stray`]: "" }],
+];
+
+for (const [label, files] of LEGACY_INSTALLED) {
+  test(`an install over ${label} stops before any file changes and names the old uninstaller, --force included`, (t) => {
+    const { project, toolkit } = setup(t, files);
+    const before = snapshot(project);
+    const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+
+    for (const force of [false, true]) {
+      assert.throws(
+        () => kit.install({ root: project, force }),
+        (error) =>
+          error.message.includes(LEGACY_UNINSTALL) && error.message.includes(`delete ${LEGACY_MANIFEST} and the old block`),
+      );
+    }
+    assert.deepEqual(snapshot(project), before);
+  });
+}
+
+// What the old uninstaller leaves when it keeps edited files (rules: null): it already deleted the rest of those
+// skills, and a skipped edited skill is never completed, so the edits go aside while the install restores the skill.
+test("an install over the edited files and manifest that the old uninstaller kept asks to move the edits aside", (t) => {
+  const { project, toolkit } = setup(t, {
+    "CLAUDE.md": "# My notes\n",
+    [LEGACY_MANIFEST]: legacyManifest(null),
+    ".claude/skills/alpha/SKILL.md": "edited\n",
+  });
+  const before = snapshot(project);
+  const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+
+  for (const force of [false, true]) {
+    assert.throws(
+      () => kit.install({ root: project, force }),
+      (error) =>
+        error.message.includes("Move your edited files aside") &&
+        error.message.includes(`delete ${LEGACY_MANIFEST}`) &&
+        !error.message.includes(LEGACY_UNINSTALL),
+    );
+  }
+  assert.deepEqual(snapshot(project), before);
+});
+
+// Without its manifest the old uninstaller finds nothing to remove, so the block has to go by hand.
+const LEGACY_WITHOUT_MANIFEST = [
+  ["an old block whose manifest is gone", { "CLAUDE.md": `# My notes\n\n${LEGACY_BLOCK}\n` }],
+  ["an old block with CRLF line endings", { "CLAUDE.md": `# My notes\r\n\r\n${LEGACY_BLOCK.replaceAll("\n", "\r\n")}\r\n` }],
+  ["a lone old END marker", { "CLAUDE.md": `# My notes\n${LEGACY_END}\n` }],
+];
+
+for (const [label, files] of LEGACY_WITHOUT_MANIFEST) {
+  test(`an install over ${label} stops before any file changes and asks to delete the block by hand`, (t) => {
+    const { project, toolkit } = setup(t, files);
+    const before = snapshot(project);
+    const kit = toolkit({ skills: { alpha: ALPHA_V1 } });
+
+    for (const force of [false, true]) {
+      assert.throws(
+        () => kit.install({ root: project, force }),
+        (error) => error.message.includes("by hand") && !error.message.includes(LEGACY_UNINSTALL),
+      );
+    }
+    assert.deepEqual(snapshot(project), before);
+  });
+}
+
+test("an old marker quoted inside a sentence is not an old install", (t) => {
+  const { project, toolkit } = setup(t, { "CLAUDE.md": `# My notes\n\nThe old block began with \`${LEGACY_BEGIN}\`.\n` });
+
+  toolkit({ skills: { alpha: ALPHA_V1 } }).install({ root: project });
+
+  assert.equal(read(project, "CLAUDE.md"), `# My notes\n\nThe old block began with \`${LEGACY_BEGIN}\`.\n\n${BLOCK}\n`);
+});
+
+test("packaged rules that carry an old marker stop the install, which would refuse every later install", (t) => {
+  const { project, toolkit } = setup(t);
+  const before = snapshot(project);
+
+  assert.throws(
+    () => toolkit({ skills: { alpha: ALPHA_V1 }, rules: `# Rules\n${LEGACY_BEGIN}\n` }).install({ root: project }),
+    /marker/,
+  );
+  assert.deepEqual(snapshot(project), before);
+});

@@ -34,8 +34,10 @@ for dir in "${dirs[@]}"; do
 done
 
 [ -f rules/CLAUDE.md ] || fail "rules/CLAUDE.md is missing"
-if grep -Fq -e "<!-- BEGIN $name -->" -e "<!-- END $name -->" rules/CLAUDE.md; then
-  fail "rules/CLAUDE.md contains a $name marker; the installer adds the markers itself"
+# The old name's markers too (the package was @thetiririri/10x-ai-toolkit until 0.1.3): the installer refuses them.
+legacy="@thetiririri/10x-ai-toolkit"
+if grep -Fq -e "<!-- BEGIN $name -->" -e "<!-- END $name -->" -e "<!-- BEGIN $legacy -->" -e "<!-- END $legacy -->" rules/CLAUDE.md; then
+  fail "rules/CLAUDE.md contains a $name or $legacy marker; the installer adds its markers itself and refuses the old ones"
 fi
 
 for script in install.js uninstall.js lib/*.js; do

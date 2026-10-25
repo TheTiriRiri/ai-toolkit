@@ -66,6 +66,22 @@ Without `--force` the bin would stop at a locally changed skill with code 2 and 
 
 CI can also do without a PAT. In the package settings, under "Manage Actions access", add the consumer repository with the Read role; the workflow then gets `permissions: { contents: read, packages: read }` and `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}`. This route comes from GitHub's documentation; `ai-review-lab` uses a PAT, and a local install needs the PAT anyway.
 
+## Moving from `@thetiririri/10x-ai-toolkit`
+
+Up to 0.1.3 the package was called `@thetiririri/10x-ai-toolkit`, and those versions stay in the registry under that name. Since 0.2.0 the package, the bins, the markers and the manifest are called `ai-toolkit`. An install over the old one would keep the old block in `CLAUDE.md` next to the new one, so the installer refuses before any file changes when it finds `.claude/.10x-ai-toolkit-manifest.json` or the old markers. Uninstall the old package first, then install the new one:
+
+```bash
+npx --yes -p @thetiririri/10x-ai-toolkit@0.1.3 10x-ai-toolkit-uninstall
+npx --yes @thetiririri/ai-toolkit@0.2.0
+```
+
+The 0.1.3 uninstaller removes an install of any old version. The skill files come back byte for byte, so git shows changes only in `CLAUDE.md` and in the manifest, which has a new name. In `CLAUDE.md` the block carries the new name, and it moves to the end of the file when your notes followed it.
+
+- **Edited skills.** The old uninstaller keeps the files you edited but deletes the rest of their skill, and an install never completes a skill it skips as edited. To keep your edits, skip the old uninstaller: delete `.claude/.10x-ai-toolkit-manifest.json` and the old block, markers included, by hand, then install. If the uninstaller already ran, move your edited files aside, delete its manifest, install, and put your edits back. From then on installs skip those skills with code 2, as they skip any edited skill, and `--force` overwrites them.
+- **No old manifest.** Without it, for example in a clone where `.claude/` was ignored, the old uninstaller finds nothing to remove. Delete the old block, markers included, by hand.
+- **Dependency mode.** `npm uninstall` leaves the installed files in place, because npm 7+ runs no uninstall scripts. Run the old uninstaller above, then replace the dependency in `package.json`. An old dependency left there would put its block back on the next `npm ci`.
+- **CI.** A workflow that reads with `GITHUB_TOKEN` needs Read access under "Manage Actions access" again, because the new name is a separate package. A PAT with `read:packages` reads both. The drift gate needs the new package name and the new manifest path.
+
 ## How the installer works
 
 - **Markers.** The rules sit in `CLAUDE.md` between `<!-- BEGIN @thetiririri/ai-toolkit -->` and `<!-- END @thetiririri/ai-toolkit -->`. Each marker stands on a line of its own, and a marker quoted inside a sentence is not a marker. Every install replaces only this block, and notes outside it stay. An unpaired or repeated marker stops the install before a single file changes, and rules that contain a marker are refused. The block takes the file's line endings (CRLF or LF), so converting the line endings of the whole file is neither a hand edit of the block nor drift.

@@ -88,6 +88,16 @@ test("rules that contain a package marker fail", (t) => {
   assert.match(result.stderr, /rules\/CLAUDE\.md/);
 });
 
+test("rules that contain a marker of the old package name fail", (t) => {
+  const dir = packageCopy(t);
+  writeFiles(dir, { "rules/CLAUDE.md": "# Rules\n<!-- BEGIN @thetiririri/10x-ai-toolkit -->\n" });
+
+  const result = validate(dir);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /rules\/CLAUDE\.md/);
+});
+
 test("Python bytecode inside a skill fails because npm pack would ship it", (t) => {
   const dir = packageCopy(t);
   writeFiles(dir, { "skills/alpha/__pycache__/run.cpython-312.pyc": "bytecode" });
