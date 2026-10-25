@@ -1,4 +1,4 @@
-# @thetiririri/10x-ai-toolkit
+# @thetiririri/ai-toolkit
 
 My AI artifacts for Claude Code in one npm package on GitHub Packages: the `code-review` and `html-report` skills, plus working rules that the installer appends to the `CLAUDE.md` of the consumer repository.
 
@@ -14,7 +14,7 @@ The recipients are my own repositories on one GitHub account and the agent sessi
 | `skills/html-report/` | `.claude/skills/html-report/` | a Markdown report turned into a standalone HTML page |
 | `rules/CLAUDE.md` | a block between markers in `CLAUDE.md` | working rules |
 
-The installer also writes `.claude/.10x-ai-toolkit-manifest.json` with the version, the install mode and the hash of every installed file.
+The installer also writes `.claude/.ai-toolkit-manifest.json` with the version, the install mode and the hash of every installed file.
 
 ## Installing in a consumer repository
 
@@ -28,7 +28,7 @@ The installer also writes `.claude/.10x-ai-toolkit-manifest.json` with the versi
 3. Install from the repository root, always with a pinned version, because the npx cache can serve a stale copy:
 
    ```bash
-   npx --yes @thetiririri/10x-ai-toolkit@0.1.3
+   npx --yes @thetiririri/ai-toolkit@0.1.3
    ```
 
 4. Commit the installed files (`.claude/skills/`, the manifest, `CLAUDE.md`). In copy mode the artifacts travel with the repository, to CI and to cloud sessions too.
@@ -38,7 +38,7 @@ An update is the same command with a newer version. A skill changed locally is s
 Uninstalling works from the manifest alone, so it does not need `node_modules`:
 
 ```bash
-npx --yes -p @thetiririri/10x-ai-toolkit@0.1.3 10x-ai-toolkit-uninstall
+npx --yes -p @thetiririri/ai-toolkit@0.1.3 ai-toolkit-uninstall
 ```
 
 An install after an uninstall writes the manifest anew, so even at the same version at least `installedAt` changes in it.
@@ -56,9 +56,9 @@ The drift gate in the consumer's CI installs the version recorded in the manifes
   env:
     NODE_AUTH_TOKEN: ${{ secrets.GH_PKG_TOKEN }}
   run: |
-    version=$(node -p 'require("./.claude/.10x-ai-toolkit-manifest.json").version')
-    npx --yes "@thetiririri/10x-ai-toolkit@$version" --force
-    drift=$(git status --porcelain -- .claude/skills CLAUDE.md .claude/.10x-ai-toolkit-manifest.json)
+    version=$(node -p 'require("./.claude/.ai-toolkit-manifest.json").version')
+    npx --yes "@thetiririri/ai-toolkit@$version" --force
+    drift=$(git status --porcelain -- .claude/skills CLAUDE.md .claude/.ai-toolkit-manifest.json)
     if [ -n "$drift" ]; then echo "$drift"; exit 1; fi
 ```
 
@@ -68,7 +68,7 @@ CI can also do without a PAT. In the package settings, under "Manage Actions acc
 
 ## How the installer works
 
-- **Markers.** The rules sit in `CLAUDE.md` between `<!-- BEGIN @thetiririri/10x-ai-toolkit -->` and `<!-- END @thetiririri/10x-ai-toolkit -->`. Each marker stands on a line of its own, and a marker quoted inside a sentence is not a marker. Every install replaces only this block, and notes outside it stay. An unpaired or repeated marker stops the install before a single file changes, and rules that contain a marker are refused. The block takes the file's line endings (CRLF or LF), so converting the line endings of the whole file is neither a hand edit of the block nor drift.
+- **Markers.** The rules sit in `CLAUDE.md` between `<!-- BEGIN @thetiririri/ai-toolkit -->` and `<!-- END @thetiririri/ai-toolkit -->`. Each marker stands on a line of its own, and a marker quoted inside a sentence is not a marker. Every install replaces only this block, and notes outside it stay. An unpaired or repeated marker stops the install before a single file changes, and rules that contain a marker are refused. The block takes the file's line endings (CRLF or LF), so converting the line endings of the whole file is neither a hand edit of the block nor drift.
 - **Manifest.** The uninstaller removes only the files in the manifest, and only those whose hash matches; changed ones stay unless you pass `--force`. `CLAUDE.md` is removed only when the install created it and nothing but the block is left in it. The consumer's `.npmrc` and `package.json` are never touched. An unreadable manifest, a path in it that leads outside `.claude/skills/`, or a symlink through which a write or delete would leave the project directory stops both scripts before any file changes. A link inside the project (e.g. `CLAUDE.md` → `AGENTS.md`) works normally.
 - **Idempotence.** A second install of the same version changes no byte, `installedAt` in the manifest included, so `git status` stays clean.
 - **Target directory.** Through `npx` (copy mode) the package installs into the current directory and refuses when it does not look like a project: no `.git`, `package.json`, `.claude/` or `CLAUDE.md`. As a dependency (`npm install`), `postinstall` installs into the project above `node_modules`, and a global install does nothing. `PROJECT_ROOT` points at the target directory in both modes (a relative path counts from the directory where `npx` or `npm install` was run), with one exception: in the npx cache `postinstall` always skips, because the bin installs right after it. A failure in `postinstall` is only a warning, so that it does not break `npm install`. npm 7+ hides the output of `postinstall`, though (it shows only with `--foreground-scripts`), so problems such as a skipped skill are reported only by the bin run through `npx`.
@@ -84,7 +84,7 @@ CI can also do without a PAT. In the package settings, under "Manage Actions acc
 2. `npm version patch -m "Release %s."` (or `minor`) creates the version commit and the `vX.Y.Z` tag.
 3. `git push origin main --follow-tags`. Pushing the tag **publishes** the version. GitHub Packages rejects publishing the same version again (409), so a fix is always a new version.
 
-The workflow `.github/workflows/publish-10x-ai-toolkit.yml` validates every push and PR, and publishes only from a `v*` tag. Before publishing it checks that the tag equals the `package.json` version and points at a commit on `main`, warns when no packaged file changed since the previous tag, and skips a version that is already published. It publishes with `GITHUB_TOKEN`, and only the publish job has `packages: write`.
+The workflow `.github/workflows/publish-ai-toolkit.yml` validates every push and PR, and publishes only from a `v*` tag. Before publishing it checks that the tag equals the `package.json` version and points at a commit on `main`, warns when no packaged file changed since the previous tag, and skips a version that is already published. It publishes with `GITHUB_TOKEN`, and only the publish job has `packages: write`.
 
 ## Development
 

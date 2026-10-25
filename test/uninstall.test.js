@@ -6,10 +6,10 @@ const path = require("node:path");
 
 const { tempDir, writeFiles, makeToolkit, snapshot } = require("./support");
 
-const BEGIN = "<!-- BEGIN @thetiririri/10x-ai-toolkit -->";
-const END = "<!-- END @thetiririri/10x-ai-toolkit -->";
+const BEGIN = "<!-- BEGIN @thetiririri/ai-toolkit -->";
+const END = "<!-- END @thetiririri/ai-toolkit -->";
 const BLOCK = `${BEGIN}\n# Rules\n\n- One sentence per commit.\n${END}`;
-const MANIFEST = ".claude/.10x-ai-toolkit-manifest.json";
+const MANIFEST = ".claude/.ai-toolkit-manifest.json";
 
 const ALPHA = { "SKILL.md": "---\nname: alpha\ndescription: Alpha.\n---\nAlpha\n", "references/notes.md": "Notes\n" };
 const BETA = { "SKILL.md": "---\nname: beta\ndescription: Beta.\n---\nBeta\n" };

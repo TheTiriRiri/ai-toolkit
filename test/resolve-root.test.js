@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const { tempDir, writeFiles, makeToolkit } = require("./support");
 
-const PACKAGE_PATH = path.join("node_modules", "@thetiririri", "10x-ai-toolkit");
+const PACKAGE_PATH = path.join("node_modules", "@thetiririri", "ai-toolkit");
 
 test("postinstall installs into the project that holds node_modules", (t) => {
   const project = path.join(tempDir(t), "project");
@@ -43,7 +43,7 @@ test("postinstall of a global install installs nothing", (t) => {
 });
 
 test("postinstall in the toolkit's own checkout installs nothing", (t) => {
-  const toolkit = makeToolkit(path.join(tempDir(t), "10x-ai-toolkit"));
+  const toolkit = makeToolkit(path.join(tempDir(t), "ai-toolkit"));
 
   assert.ok(toolkit.resolveRoot({ mode: "postinstall", env: {} }).skip);
 });

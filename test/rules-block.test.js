@@ -4,8 +4,8 @@ const assert = require("node:assert/strict");
 
 const { applyRulesBlock, removeRulesBlock } = require("../lib/toolkit");
 
-const BEGIN = "<!-- BEGIN @thetiririri/10x-ai-toolkit -->";
-const END = "<!-- END @thetiririri/10x-ai-toolkit -->";
+const BEGIN = "<!-- BEGIN @thetiririri/ai-toolkit -->";
+const END = "<!-- END @thetiririri/ai-toolkit -->";
 const RULES = "# Rules\n\n- One sentence per commit.\n";
 const BLOCK = `${BEGIN}\n# Rules\n\n- One sentence per commit.\n${END}`;
 

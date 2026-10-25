@@ -1,4 +1,4 @@
-name: Publish 10x AI Toolkit
+name: Publish AI Toolkit
 
 # Every push and pull request is validated; only a v* tag publishes, and the tag is the irreversible step:
 # GitHub Packages never accepts the same version twice.

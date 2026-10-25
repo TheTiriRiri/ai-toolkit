@@ -1,12 +1,12 @@
 {
-  "name": "@thetiririri/10x-ai-toolkit",
+  "name": "@thetiririri/ai-toolkit",
   "version": "0.1.3",
   "description": "Claude Code skills and working rules distributed through GitHub Packages",
   "license": "UNLICENSED",
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheTiriRiri/10x-ai-toolkit.git"
+    "url": "git+https://github.com/TheTiriRiri/ai-toolkit.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -20,8 +20,8 @@
     "README.md"
   ],
   "bin": {
-    "10x-ai-toolkit": "install.js",
-    "10x-ai-toolkit-uninstall": "uninstall.js"
+    "ai-toolkit": "install.js",
+    "ai-toolkit-uninstall": "uninstall.js"
   },
   "scripts": {
     "postinstall": "node install.js --postinstall",

@@ -10,7 +10,7 @@ const DEFAULT_RULES = "# Rules\n\n- One sentence per commit.\n";
 
 /** A fresh directory, removed after the test; realpath so it compares equal to a module's __dirname. */
 function tempDir(t) {
-  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "10x-ai-toolkit-test-")));
+  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "ai-toolkit-test-")));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 }

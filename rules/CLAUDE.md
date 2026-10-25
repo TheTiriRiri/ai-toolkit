@@ -1,6 +1,6 @@
-# Working rules (@thetiririri/10x-ai-toolkit)
+# Working rules (@thetiririri/ai-toolkit)
 
-These rules come from the `@thetiririri/10x-ai-toolkit` package, which keeps them in this block of the file. To change them, edit `rules/CLAUDE.md` in the toolkit repository and publish a new version: edits inside the block are replaced on the next install. Notes outside the block are yours and survive every install.
+These rules come from the `@thetiririri/ai-toolkit` package, which keeps them in this block of the file. To change them, edit `rules/CLAUDE.md` in the toolkit repository and publish a new version: edits inside the block are replaced on the next install. Notes outside the block are yours and survive every install.
 
 ## Skills from this package
 

@@ -33,7 +33,7 @@ function git(dir, ...args) {
 }
 
 function packageJson(version, extra = {}) {
-  const pkg = { name: "@thetiririri/10x-ai-toolkit", version, files: ["skills/", "README.md"], ...extra };
+  const pkg = { name: "@thetiririri/ai-toolkit", version, files: ["skills/", "README.md"], ...extra };
   return `${JSON.stringify(pkg, null, 2)}\n`;
 }
 
