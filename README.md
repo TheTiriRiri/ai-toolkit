@@ -28,7 +28,7 @@ The installer also writes `.claude/.ai-toolkit-manifest.json` with the version, 
 3. Install from the repository root, always with a pinned version, because the npx cache can serve a stale copy:
 
    ```bash
-   npx --yes @thetiririri/ai-toolkit@0.1.3
+   npx --yes @thetiririri/ai-toolkit@0.2.0
    ```
 
 4. Commit the installed files (`.claude/skills/`, the manifest, `CLAUDE.md`). In copy mode the artifacts travel with the repository, to CI and to cloud sessions too.
@@ -38,7 +38,7 @@ An update is the same command with a newer version. A skill changed locally is s
 Uninstalling works from the manifest alone, so it does not need `node_modules`:
 
 ```bash
-npx --yes -p @thetiririri/ai-toolkit@0.1.3 ai-toolkit-uninstall
+npx --yes -p @thetiririri/ai-toolkit@0.2.0 ai-toolkit-uninstall
 ```
 
 An install after an uninstall writes the manifest anew, so even at the same version at least `installedAt` changes in it.
