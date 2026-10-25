@@ -2,7 +2,7 @@
   "name": "@thetiririri/ai-toolkit",
   "version": "0.2.0",
   "description": "Claude Code skills and working rules distributed through GitHub Packages",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "type": "commonjs",
   "repository": {
     "type": "git",
@@ -17,7 +17,8 @@
     "lib/",
     "install.js",
     "uninstall.js",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "bin": {
     "ai-toolkit": "install.js",

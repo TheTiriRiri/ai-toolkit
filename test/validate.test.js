@@ -9,11 +9,12 @@ const { REPO, tempDir, writeFiles, makeToolkit } = require("./support");
 
 const ALPHA = { "SKILL.md": "---\nname: alpha\ndescription: Use when testing.\n---\n\n# Alpha\n" };
 
-/** A complete copy of the package (code, rules, README, scripts) with one fixture skill, ready for validate.sh. */
+/** A complete copy of the package (code, rules, README, LICENSE, scripts) with one fixture skill, ready for validate.sh. */
 function packageCopy(t, { skills = { alpha: ALPHA } } = {}) {
   const dir = path.join(tempDir(t), "toolkit");
   makeToolkit(dir, { skills });
   fs.copyFileSync(path.join(REPO, "README.md"), path.join(dir, "README.md"));
+  fs.copyFileSync(path.join(REPO, "LICENSE"), path.join(dir, "LICENSE"));
   fs.cpSync(path.join(REPO, "scripts"), path.join(dir, "scripts"), { recursive: true });
   return dir;
 }

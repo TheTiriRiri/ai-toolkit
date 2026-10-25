@@ -4,7 +4,7 @@ My AI artifacts for Claude Code in one npm package on GitHub Packages: the `code
 
 ## Why GitHub Packages
 
-The recipients are my own repositories on one GitHub account and the agent sessions working in them, so I choose Model 1 from lesson M5L4. It costs one `publishConfig` field in `package.json` and one read-only PAT, while AWS CodeArtifact or an API of my own with a CLI would be infrastructure without a recipient.
+The consumers are my own repositories on one GitHub account and the agent sessions working in them. GitHub Packages serves them for one `publishConfig` field in `package.json` and one read-only PAT, and the publish runs in GitHub Actions on the repository's own `GITHUB_TOKEN`, with no extra secret. The public npm registry would advertise a package meant for one account, and AWS CodeArtifact or a registry of my own behind a CLI would be infrastructure without a recipient.
 
 ## Contents
 
