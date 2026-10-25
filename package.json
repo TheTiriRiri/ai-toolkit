@@ -1,6 +1,6 @@
 {
   "name": "@thetiririri/ai-toolkit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Claude Code skills and working rules distributed through GitHub Packages",
   "license": "MIT",
   "type": "commonjs",
